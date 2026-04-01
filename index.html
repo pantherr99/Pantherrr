@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Project | Advanced Performance</title>
+    <title>Panther Project | Premium Performance</title>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Oxanium:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #8a2be2; --bg: #020202; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             background-color: var(--bg);
             color: #fff;
@@ -18,46 +17,26 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: radial-gradient(circle at center, #110820 0%, #020202 100%);
+            background: radial-gradient(circle at center, #1a0b35 0%, #020202 100%);
         }
-
-        /* Arka Plan Çizgileri */
         .scanlines {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(138, 43, 226, 0.02), rgba(0, 0, 0, 0), rgba(138, 43, 226, 0.02));
-            background-size: 100% 4px, 3px 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
             z-index: 1;
             pointer-events: none;
         }
-
-        .main-wrapper {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            animation: masterReveal 1.5s ease-out;
-        }
-
-        /* --- LOGO ALANI (360 DÖNÜŞ) --- */
-        .panther-stage {
-            perspective: 1200px;
-            margin-bottom: 20px;
-        }
-
+        .main-wrapper { position: relative; z-index: 10; text-align: center; animation: fadeIn 1.5s ease-in; }
+        .panther-stage { perspective: 1200px; margin-bottom: 20px; }
         .panther-stage img {
             width: 320px;
-            height: auto;
             mix-blend-mode: screen; 
-            filter: drop-shadow(0 0 30px rgba(138, 43, 226, 0.6));
-            animation: rotateFull 12s linear infinite, floatAnim 4s ease-in-out infinite;
-            transform-style: preserve-3d;
+            filter: drop-shadow(0 0 35px rgba(138, 43, 226, 0.8));
+            animation: rotateFull 12s linear infinite, float 4s ease-in-out infinite;
         }
-
         @keyframes rotateFull { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
-        @keyframes floatAnim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-
-        /* --- YAZI EFEKTLERİ --- */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
         .content-box h1 {
             font-family: 'Syncopate', sans-serif;
             font-size: 4rem;
@@ -65,58 +44,26 @@
             background: linear-gradient(to bottom, #fff, var(--primary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-            animation: textGlitch 5s infinite;
-        }
-
-        .tagline {
-            font-size: 0.85rem;
-            color: #666;
-            letter-spacing: 5px;
-            margin-bottom: 45px;
             text-transform: uppercase;
         }
-
-        /* --- BUTONLAR --- */
-        .btn-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 210px);
-            gap: 15px;
-            justify-content: center;
-        }
-
+        .tagline { font-size: 0.8rem; color: #666; letter-spacing: 5px; margin-bottom: 40px; text-transform: uppercase; }
+        .btn-grid { display: grid; grid-template-columns: repeat(2, 200px); gap: 15px; justify-content: center; }
         .btn-apex {
             padding: 16px;
             text-decoration: none;
             color: #fff;
             background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
             font-weight: 800;
-            font-size: 12px;
-            letter-spacing: 1.5px;
+            font-size: 11px;
+            letter-spacing: 2px;
             text-transform: uppercase;
             transition: 0.4s;
             border-radius: 4px;
         }
-
-        .btn-apex:hover {
-            background: rgba(138, 43, 226, 0.15);
-            border-color: var(--primary);
-            transform: scale(1.05) translateY(-3px);
-            box-shadow: 0 10px 25px rgba(138, 43, 226, 0.3);
-            letter-spacing: 3px;
-        }
-
-        .footer { position: fixed; bottom: 25px; font-size: 10px; color: #333; letter-spacing: 2px; }
-
-        @keyframes masterReveal { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes textGlitch { 0%, 95% { transform: skew(0); } 96% { transform: skew(3deg); } 98% { transform: skew(-3deg); } }
-
-        @media (max-width: 600px) {
-            .btn-grid { grid-template-columns: 1fr; width: 85%; }
-            .content-box h1 { font-size: 2rem; letter-spacing: 5px; }
-            .panther-stage img { width: 220px; }
-        }
+        .btn-apex:hover { background: rgba(138, 43, 226, 0.2); border-color: var(--primary); transform: scale(1.05); box-shadow: 0 0 20px rgba(138, 43, 226, 0.4); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @media (max-width: 600px) { .btn-grid { grid-template-columns: 1fr; width: 80%; } .content-box h1 { font-size: 2rem; } .panther-stage img { width: 220px; } }
     </style>
 </head>
 <body>
@@ -127,15 +74,14 @@
         </div>
         <div class="content-box">
             <h1>PANTHER</h1>
-            <p class="tagline">Optimization & Apex Performance</p>
+            <p class="tagline">Performance Suite</p>
         </div>
         <div class="btn-grid">
-            <a href="https://discord.gg/SENIN_LINKIN" class="btn-apex">Join Discord</a>
-            <a href="#" class="btn-apex">Panther Pack</a>
+            <a href="https://discord.gg/fHbARMjV" class="btn-apex">Discord</a>
+            <a href="#" class="btn-apex">Download</a>
             <a href="#" class="btn-apex">YouTube</a>
             <a href="#" class="btn-apex">Reviews</a>
         </div>
-        <footer class="footer">© 2026 PANTHER PRIV. DESIGNED FOR POWER.</footer>
     </div>
 </body>
 </html>
