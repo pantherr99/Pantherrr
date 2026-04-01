@@ -3,150 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Project | Advanced Performance</title>
-    <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;700;800&display=swap" rel="stylesheet">
+    <title>Panther Project | Advanced Performance Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Oxanium:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Oxanium', sans-serif; }
+        :root {
+            --primary: #8a2be2;
+            --primary-glow: rgba(138, 43, 226, 0.6);
+            --bg: #020202;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            background-color: #030303;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            background-color: var(--bg);
+            color: #fff;
+            font-family: 'Oxanium', sans-serif;
+            height: 100vh;
             overflow: hidden;
-            background: radial-gradient(circle at center, #150826 0%, #030303 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Arka plan derinlik */
+            background: radial-gradient(circle at center, #110820 0%, #020202 100%);
         }
 
-        .bg-overlay {
+        /* --- ARKA PLAN EFEKTLERİ --- */
+        .scanlines {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: radial-gradient(rgba(138, 43, 226, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 0;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 4px, 3px 100%;
+            z-index: 1;
+            pointer-events: none;
         }
 
-        .container {
-            text-align: center;
+        .main-wrapper {
+            position: relative;
             z-index: 10;
-            padding: 20px;
+            text-align: center;
+            animation: masterReveal 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        /* --- 360 DERECE DÖNEN METALİK LOGO --- */
-        .logo-wrapper {
-            perspective: 1000px;
+        /* --- 360 DÖNEN METALİK PANTER --- */
+        .panther-stage {
+            perspective: 1500px;
             margin-bottom: 20px;
         }
 
-        .logo-wrapper img {
-            width: 320px; /* Metalik panter için ideal boyut */
+        .panther-stage img {
+            width: 350px; /* Görseli büyüttüm */
             height: auto;
-            
-            /* BEYAZLIĞI SİLİP METALİK PARLAKLIĞI ÖNE ÇIKARAN AYAR */
+            /* Şeffaflık ve Parlama */
             mix-blend-mode: screen; 
-            filter: drop-shadow(0 0 20px rgba(138, 43, 226, 0.6)) contrast(1.2);
-
-            /* 360 DERECE DÖNME VE SÜZÜLME */
-            animation: rotate360 12s linear infinite;
+            filter: drop-shadow(0 0 30px var(--primary-glow)) brightness(1.1);
+            
+            /* Animasyon: 360 Dönme + Havada Süzülme */
+            animation: rotateFull 10s linear infinite, floatAnim 4s ease-in-out infinite;
             transform-style: preserve-3d;
         }
 
-        @keyframes rotate360 {
-            0% { transform: rotateY(0deg) translateY(0); }
-            50% { transform: rotateY(180deg) translateY(-25px); }
-            100% { transform: rotateY(360deg) translateY(0); }
+        @keyframes rotateFull {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
         }
 
-        .logo-area h1 {
-            font-size: 4.5rem;
-            font-weight: 800;
-            letter-spacing: 12px;
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-25px); }
+        }
+
+        /* --- BAŞLIK VE YAZILAR --- */
+        .content-box h1 {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 4.2rem;
+            letter-spacing: 15px;
             text-transform: uppercase;
-            background: linear-gradient(to bottom, #ffffff 40%, #8a2be2 100%);
+            background: linear-gradient(to bottom, #fff 40%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            filter: drop-shadow(0 0 10px rgba(138, 43, 226, 0.3));
+            margin-bottom: 5px;
+            /* Yazı Glitch Animasyonu */
+            animation: textGlitch 4s infinite;
         }
 
-        .sub-text {
-            color: #888;
+        .content-box .tagline {
             font-size: 0.9rem;
-            margin-bottom: 45px;
-            letter-spacing: 5px;
+            color: #777;
             text-transform: uppercase;
+            letter-spacing: 6px;
+            margin-bottom: 50px;
             font-weight: 600;
         }
 
-        .links {
+        /* --- BUTONLAR (ELİT TASARIM) --- */
+        .btn-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 220px);
             gap: 20px;
-            width: 500px;
-            margin: 0 auto;
+            justify-content: center;
         }
 
-        .btn {
+        .btn-apex {
+            position: relative;
             padding: 18px;
             text-decoration: none;
             color: #fff;
-            font-weight: 700;
-            font-size: 14px;
-            letter-spacing: 1.5px;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(138, 43, 226, 0.3);
-            border-radius: 8px;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-weight: 800;
+            font-size: 13px;
+            letter-spacing: 2px;
             text-transform: uppercase;
+            transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+            overflow: hidden;
+            border-radius: 2px;
         }
 
-        .btn:hover {
-            background: rgba(138, 43, 226, 0.2);
-            border-color: #8a2be2;
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.4);
+        /* Buton Hover Efekti */
+        .btn-apex:hover {
+            background: rgba(138, 43, 226, 0.15);
+            border-color: var(--primary);
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 15px 35px rgba(138, 43, 226, 0.3);
+            letter-spacing: 4px; /* Yazı genişler */
         }
 
-        .footer {
+        .btn-apex::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-apex:hover::before { left: 100%; }
+
+        /* --- FOOTER --- */
+        .footer-info {
             position: fixed;
             bottom: 30px;
             font-size: 11px;
             color: #444;
             letter-spacing: 3px;
+            font-weight: 400;
         }
 
+        /* --- DİĞER ANİMASYONLAR --- */
+        @keyframes masterReveal {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes textGlitch {
+            0%, 90%, 100% { transform: skew(0); }
+            91% { transform: skew(2deg); color: #ff00ff; }
+            93% { transform: skew(-2deg); color: #00ffff; }
+        }
+
+        /* Mobil Ayarı */
         @media (max-width: 600px) {
-            .links { width: 100%; grid-template-columns: 1fr; }
-            .logo-area h1 { font-size: 2.8rem; }
-            .logo-wrapper img { width: 220px; }
+            .btn-grid { grid-template-columns: 1fr; width: 90%; }
+            .content-box h1 { font-size: 2.2rem; letter-spacing: 6px; }
+            .panther-stage img { width: 240px; }
         }
     </style>
 </head>
 <body>
-    <div class="bg-overlay"></div>
+    <div class="scanlines"></div>
     
-    <div class="container">
-        <div class="logo-wrapper">
-            <img src="https://raw.githubusercontent.com/pantherr99/Pantherrr/main/image.png" alt="Panther Metalic Logo">
+    <div class="main-wrapper">
+        <div class="panther-stage">
+            <img src="https://i.ibb.co/6yYm2Fq/panther-metalic.png" alt="Panther Premium">
         </div>
 
-        <div class="logo-area">
+        <div class="content-box">
             <h1>PANTHER</h1>
-            <p class="sub-text">Optimization & Performance Apex</p>
+            <p class="tagline">Optimization & Apex Performance Suite</p>
         </div>
 
-        <div class="links">
-            <a href="#" class="btn">Discord Server</a>
-            <a href="#" class="btn">Panther Pack</a>
-            <a href="#" class="btn">YouTube</a>
-            <a href="#" class="btn">Showcase</a>
+        <div class="btn-grid">
+            <a href="https://discord.gg/SENIN_LINKIN" class="btn-apex">Join Discord</a>
+            <a href="#" class="btn-apex">Get The Pack</a>
+            <a href="#" class="btn-apex">YouTube</a>
+            <a href="#" class="btn-apex">Reviews</a>
         </div>
 
-        <div class="footer">
+        <footer class="footer-info">
             © 2026 PANTHER PRIV. ALL RIGHTS RESERVED.
-        </div>
+        </footer>
     </div>
 </body>
 </html>
