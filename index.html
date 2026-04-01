@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panther Project | Advanced Performance Suite</title>
+    <title>Panther Project | Advanced Performance</title>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Oxanium:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #8a2be2;
-            --primary-glow: rgba(138, 43, 226, 0.6);
-            --bg: #020202;
-        }
-
+        :root { --primary: #8a2be2; --bg: #020202; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
@@ -23,16 +18,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Arka plan derinlik */
             background: radial-gradient(circle at center, #110820 0%, #020202 100%);
         }
 
-        /* --- ARKA PLAN EFEKTLERİ --- */
+        /* Arka Plan Çizgileri */
         .scanlines {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+                        linear-gradient(90deg, rgba(138, 43, 226, 0.02), rgba(0, 0, 0, 0), rgba(138, 43, 226, 0.02));
             background-size: 100% 4px, 3px 100%;
             z-index: 1;
             pointer-events: none;
@@ -42,157 +36,106 @@
             position: relative;
             z-index: 10;
             text-align: center;
-            animation: masterReveal 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            animation: masterReveal 1.5s ease-out;
         }
 
-        /* --- 360 DÖNEN METALİK PANTER --- */
+        /* --- LOGO ALANI (360 DÖNÜŞ) --- */
         .panther-stage {
-            perspective: 1500px;
+            perspective: 1200px;
             margin-bottom: 20px;
         }
 
         .panther-stage img {
-            width: 350px; /* Görseli büyüttüm */
+            width: 320px;
             height: auto;
-            /* Şeffaflık ve Parlama */
             mix-blend-mode: screen; 
-            filter: drop-shadow(0 0 30px var(--primary-glow)) brightness(1.1);
-            
-            /* Animasyon: 360 Dönme + Havada Süzülme */
-            animation: rotateFull 10s linear infinite, floatAnim 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(138, 43, 226, 0.6));
+            animation: rotateFull 12s linear infinite, floatAnim 4s ease-in-out infinite;
             transform-style: preserve-3d;
         }
 
-        @keyframes rotateFull {
-            from { transform: rotateY(0deg); }
-            to { transform: rotateY(360deg); }
-        }
+        @keyframes rotateFull { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+        @keyframes floatAnim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
 
-        @keyframes floatAnim {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-25px); }
-        }
-
-        /* --- BAŞLIK VE YAZILAR --- */
+        /* --- YAZI EFEKTLERİ --- */
         .content-box h1 {
             font-family: 'Syncopate', sans-serif;
-            font-size: 4.2rem;
-            letter-spacing: 15px;
-            text-transform: uppercase;
-            background: linear-gradient(to bottom, #fff 40%, var(--primary) 100%);
+            font-size: 4rem;
+            letter-spacing: 12px;
+            background: linear-gradient(to bottom, #fff, var(--primary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
-            /* Yazı Glitch Animasyonu */
-            animation: textGlitch 4s infinite;
+            animation: textGlitch 5s infinite;
         }
 
-        .content-box .tagline {
-            font-size: 0.9rem;
-            color: #777;
+        .tagline {
+            font-size: 0.85rem;
+            color: #666;
+            letter-spacing: 5px;
+            margin-bottom: 45px;
             text-transform: uppercase;
-            letter-spacing: 6px;
-            margin-bottom: 50px;
-            font-weight: 600;
         }
 
-        /* --- BUTONLAR (ELİT TASARIM) --- */
+        /* --- BUTONLAR --- */
         .btn-grid {
             display: grid;
-            grid-template-columns: repeat(2, 220px);
-            gap: 20px;
+            grid-template-columns: repeat(2, 210px);
+            gap: 15px;
             justify-content: center;
         }
 
         .btn-apex {
-            position: relative;
-            padding: 18px;
+            padding: 16px;
             text-decoration: none;
             color: #fff;
             background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(138, 43, 226, 0.2);
             font-weight: 800;
-            font-size: 13px;
-            letter-spacing: 2px;
+            font-size: 12px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
-            overflow: hidden;
-            border-radius: 2px;
+            transition: 0.4s;
+            border-radius: 4px;
         }
 
-        /* Buton Hover Efekti */
         .btn-apex:hover {
             background: rgba(138, 43, 226, 0.15);
             border-color: var(--primary);
-            transform: scale(1.05) translateY(-5px);
-            box-shadow: 0 15px 35px rgba(138, 43, 226, 0.3);
-            letter-spacing: 4px; /* Yazı genişler */
-        }
-
-        .btn-apex::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: 0.5s;
-        }
-
-        .btn-apex:hover::before { left: 100%; }
-
-        /* --- FOOTER --- */
-        .footer-info {
-            position: fixed;
-            bottom: 30px;
-            font-size: 11px;
-            color: #444;
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 10px 25px rgba(138, 43, 226, 0.3);
             letter-spacing: 3px;
-            font-weight: 400;
         }
 
-        /* --- DİĞER ANİMASYONLAR --- */
-        @keyframes masterReveal {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        .footer { position: fixed; bottom: 25px; font-size: 10px; color: #333; letter-spacing: 2px; }
 
-        @keyframes textGlitch {
-            0%, 90%, 100% { transform: skew(0); }
-            91% { transform: skew(2deg); color: #ff00ff; }
-            93% { transform: skew(-2deg); color: #00ffff; }
-        }
+        @keyframes masterReveal { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes textGlitch { 0%, 95% { transform: skew(0); } 96% { transform: skew(3deg); } 98% { transform: skew(-3deg); } }
 
-        /* Mobil Ayarı */
         @media (max-width: 600px) {
-            .btn-grid { grid-template-columns: 1fr; width: 90%; }
-            .content-box h1 { font-size: 2.2rem; letter-spacing: 6px; }
-            .panther-stage img { width: 240px; }
+            .btn-grid { grid-template-columns: 1fr; width: 85%; }
+            .content-box h1 { font-size: 2rem; letter-spacing: 5px; }
+            .panther-stage img { width: 220px; }
         }
     </style>
 </head>
 <body>
     <div class="scanlines"></div>
-    
     <div class="main-wrapper">
         <div class="panther-stage">
             <img src="https://i.ibb.co/6yYm2Fq/panther-metalic.png" alt="Panther Premium">
         </div>
-
         <div class="content-box">
             <h1>PANTHER</h1>
-            <p class="tagline">Optimization & Apex Performance Suite</p>
+            <p class="tagline">Optimization & Apex Performance</p>
         </div>
-
         <div class="btn-grid">
             <a href="https://discord.gg/SENIN_LINKIN" class="btn-apex">Join Discord</a>
-            <a href="#" class="btn-apex">Get The Pack</a>
+            <a href="#" class="btn-apex">Panther Pack</a>
             <a href="#" class="btn-apex">YouTube</a>
             <a href="#" class="btn-apex">Reviews</a>
         </div>
-
-        <footer class="footer-info">
-            © 2026 PANTHER PRIV. ALL RIGHTS RESERVED.
-        </footer>
+        <footer class="footer">© 2026 PANTHER PRIV. DESIGNED FOR POWER.</footer>
     </div>
 </body>
 </html>
