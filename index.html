@@ -7,178 +7,171 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        * { scroll-behavior: smooth; }
-        body { background-color: #000; color: white; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; overflow-x: hidden; }
-        .viewport { width: 350px; height: 350px; margin: 0 auto; perspective: 1500px; display: flex; justify-content: center; align-items: center; mix-blend-mode: screen; }
-        #panther-logo { width: 100%; animation: pantherRotate 18s infinite linear; transform-style: preserve-3d; }
-        @keyframes pantherRotate { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
+        * { scroll-behavior: smooth; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #000; color: white; margin: 0; overflow-x: hidden; }
+        
+        /* Animasyonlar & Efektler */
         .glass { background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .cyber-card { position: relative; overflow: hidden; background: linear-gradient(145deg, #050505, #0a0a0a); border: 1px solid rgba(255,255,255,0.03); transition: all 0.4s ease; }
-        .cyber-card:hover { border-color: rgba(16, 185, 129, 0.4); transform: translateY(-5px); }
-        .cyber-card img { height: 40px; filter: grayscale(100%) brightness(0.6); transition: 0.4s; }
-        .cyber-card:hover img { filter: grayscale(0%) brightness(1.2); }
+        .cyber-card { background: #0c0f14; border: 1px solid #1a1f26; border-radius: 1.5rem; position: relative; transition: 0.3s; }
+        .cyber-card:hover { border-color: #10b981; transform: translateY(-5px); }
         .laser { position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: #10b981; box-shadow: 0 0 15px #10b981; animation: laserScan 3s infinite linear; opacity: 0.3; }
         @keyframes laserScan { 0% { top: 0%; } 100% { top: 100%; } }
-        #login-overlay, #dashboard-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(20px); }
+        
+        /* Overlays */
+        #login-overlay, #dashboard-overlay, #admin-overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #080a0c; z-index: 1000; justify-content: center; align-items: center; 
+        }
         .active-flex { display: flex !important; animation: fadeIn 0.4s ease; }
-        input, textarea { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); outline: none; transition: 0.3s; color: white; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        input, select, textarea { background: #11141b; border: 1px solid #1e252e; border-radius: 0.75rem; padding: 0.75rem 1rem; color: white; outline: none; }
         input:focus { border-color: #10b981; }
-        .tab-btn.active { border-bottom: 2px solid #10b981; color: white; }
+        
+        /* Scanner Logoları Filtre */
+        .scanner-img { height: 45px; filter: grayscale(100%) brightness(0.6); transition: 0.4s; }
+        .cyber-card:hover .scanner-img { filter: grayscale(0%) brightness(1.2); }
     </style>
 </head>
 <body>
 
     <div id="login-overlay">
-        <div class="relative w-full max-w-md p-12 rounded-[3rem] border border-white/5 bg-[#050505] overflow-hidden text-center">
+        <div class="relative w-full max-w-md p-10 bg-[#0c0f14] border border-[#1a1f26] rounded-[3rem] text-center overflow-hidden">
             <div class="laser"></div>
-            <button onclick="toggleLogin()" class="absolute top-8 left-8 text-[9px] font-black text-gray-600 hover:text-white uppercase tracking-[0.3em] translatable" data-en="← Close" data-tr="← Kapat">← Close</button>
-            <h2 class="text-4xl font-black italic uppercase mb-2 tracking-tighter">Portal</h2>
-            <p class="text-gray-500 text-[9px] font-bold uppercase tracking-[0.4em] mb-12 translatable" data-en="Initialize Stealth" data-tr="Sistemi Başlat">Initialize Stealth</p>
-            <div class="space-y-6 text-left">
-                <div>
-                    <label class="text-[9px] font-black text-gray-600 uppercase ml-3 mb-2 block tracking-widest translatable" data-en="License Key" data-tr="Lisans Anahtarı">License Key</label>
-                    <input type="password" id="license-input" placeholder="PANTHER-XXXX-XXXX" class="w-full px-6 py-5 rounded-2xl text-xs font-mono tracking-widest">
+            <button onclick="toggleLogin()" class="absolute top-8 left-8 text-[9px] font-black text-gray-600 hover:text-white uppercase tracking-[0.3em]">← Close</button>
+            <h2 class="text-3xl font-black italic uppercase mb-6 tracking-tighter">Portal Access</h2>
+            
+            <div class="mb-8 p-5 bg-black/40 rounded-2xl border border-white/5 text-left">
+                <p class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-3">Detected Hardware Environment:</p>
+                <div class="grid grid-cols-1 gap-2 text-[10px] font-bold uppercase">
+                    <div class="flex justify-between border-b border-white/5 pb-1"><span class="text-gray-500">GPU:</span> <span id="gpu-val" class="text-[#10b981]">Detecting...</span></div>
+                    <div class="flex justify-between border-b border-white/5 pb-1"><span class="text-gray-500">System:</span> <span id="cpu-val" class="text-white">-</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">HWID:</span> <span id="hwid-hash" class="text-gray-600 font-mono">****-****</span></div>
                 </div>
-                <button onclick="authenticate()" class="w-full py-5 bg-white text-black font-black italic rounded-2xl text-[10px] uppercase tracking-widest hover:bg-gray-200 transition translatable" data-en="Authenticate" data-tr="Doğrula">Authenticate</button>
+            </div>
+
+            <div class="space-y-4">
+                <input type="password" id="license-input" placeholder="LICENSE KEY OR ADMIN CODE" class="w-full font-mono tracking-widest py-4 text-center">
+                <button onclick="authenticate()" class="w-full py-4 bg-white text-black font-black uppercase rounded-xl hover:bg-gray-200 transition">Initialize Session</button>
+                <p id="error-msg" class="text-[9px] text-red-500 uppercase font-black mt-2 hidden"></p>
             </div>
         </div>
     </div>
 
-    <div id="dashboard-overlay">
-        <div class="w-full max-w-5xl h-[85vh] flex flex-col glass rounded-[3rem] overflow-hidden border-white/10 relative">
-            <div class="laser"></div>
-            <div class="flex items-center justify-between px-10 py-6 border-b border-white/5 bg-black/20">
-                <div class="text-xl font-black italic uppercase tracking-tighter text-[#10b981]">Panther Console</div>
-                <div class="flex space-x-8">
-                    <button onclick="switchTab('user-dash')" id="tab-user" class="tab-btn active text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition py-2">Dashboard</button>
-                    <button onclick="switchTab('admin-dash')" id="tab-admin" class="tab-btn text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition py-2">Admin Panel</button>
-                    <button onclick="logout()" class="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-400 transition py-2">Exit</button>
+    <div id="dashboard-overlay" class="p-6">
+        <div class="w-full max-w-4xl text-center">
+            <h1 class="text-4xl font-black italic uppercase text-[#4ade80] mb-2 drop-shadow-[0_0_15px_rgba(74,222,128,0.4)]">Command Center</h1>
+            <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.4em] mb-12">Welcome back, operator</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-left">
+                <div class="cyber-card p-8"><p class="text-[10px] font-bold text-gray-500 uppercase mb-4">License Status</p>
+                    <div class="flex items-center space-x-4"><div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div><h3 class="text-3xl font-black italic uppercase">Active</h3></div>
+                    <p class="text-gray-500 text-[11px] mt-2 uppercase font-bold">28 Days Remaining</p>
+                </div>
+                <div class="cyber-card p-8"><p class="text-[10px] font-bold text-gray-500 uppercase mb-4">System Updates</p>
+                    <h3 class="text-xl font-black italic">Build v3.4.1</h3>
+                    <ul class="text-[10px] text-gray-400 mt-2 space-y-1 font-bold uppercase"><li>- Ring0 Hypervisor Optimization</li><li>- Storm Scanner Bypass Updated</li></ul>
                 </div>
             </div>
-            <div class="flex-1 overflow-y-auto p-10">
-                <div id="user-dash" class="space-y-8">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="cyber-card p-8 rounded-3xl border-[#10b981]/10 bg-gradient-to-br from-black to-[#10b981]/10">
-                            <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-2">User Subscription</p>
-                            <h3 id="sub-time" class="text-2xl font-black italic text-white uppercase">30 Days Left</h3>
-                        </div>
-                        <div class="cyber-card p-8 rounded-3xl border-white/5 col-span-2">
-                            <p class="text-[9px] font-black text-[#10b981] uppercase tracking-widest mb-2 animate-pulse">● Global Announcement</p>
-                            <h3 id="live-announcement" class="text-sm font-bold text-gray-300 italic">"Security protocols updated. Manual checks are now fully bypassed."</h3>
-                        </div>
-                    </div>
-                    <div class="flex flex-col justify-center items-center bg-[#10b981]/5 rounded-[2.5rem] border border-[#10b981]/20 p-12 text-center">
-                        <h4 class="text-3xl font-black italic uppercase mb-2">Client Access</h4>
-                        <button class="px-16 py-6 bg-white text-black rounded-2xl font-black italic text-[11px] tracking-widest hover:scale-105 transition">DOWNLOAD VERSION 2.4.0</button>
-                    </div>
+            <div class="cyber-card p-8 mb-6 text-left">
+                <p class="text-[10px] font-bold text-[#10b981] uppercase mb-4 tracking-widest">Global Intelligence (Admin Comms)</p>
+                <p id="user-announcement" class="text-sm text-gray-300 leading-relaxed italic">All systems are currently undetected. We have pushed a silent update. Inject securely.</p>
+                <p class="text-[9px] text-gray-600 mt-4 uppercase font-black">Posted: Today</p>
+            </div>
+            <button class="w-full py-6 bg-[#4ade80] text-black font-black italic rounded-2xl text-xs uppercase tracking-[0.2em] hover:scale-[1.01] transition shadow-[0_0_30px_rgba(74,222,128,0.2)]">Deploy Injector (Download)</button>
+            <button onclick="logout()" class="mt-8 text-gray-600 text-[10px] font-black uppercase hover:text-white transition">Terminate Session</button>
+        </div>
+    </div>
+
+    <div id="admin-overlay" class="p-6">
+        <div class="w-full max-w-4xl text-center">
+            <h1 class="text-4xl font-black italic uppercase text-[#ff4d4d] mb-2 drop-shadow-[0_0_15px_rgba(255,77,77,0.4)]">Root Access</h1>
+            <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.4em] mb-12">Administrator Override Terminal</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-left">
+                <div class="cyber-card p-8"><p class="text-[10px] font-bold text-gray-500 uppercase mb-4">Key Generator</p>
+                    <select id="key-days" class="w-full mb-4"><option value="1">1 Day</option><option value="7">7 Days</option><option value="30">30 Days</option><option value="999">Lifetime</option></select>
+                    <button onclick="generateKeyAdmin()" class="w-full py-3 border border-[#4ade80] text-[#4ade80] font-black uppercase italic text-[10px] rounded-xl hover:bg-[#4ade80]/10">Generate Key</button>
                 </div>
-                <div id="admin-dash" class="hidden space-y-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="glass p-8 rounded-3xl border-white/10 space-y-4">
-                            <h4 class="text-xs font-black uppercase tracking-widest text-[#10b981]">License Manager</h4>
-                            <div class="flex space-x-2">
-                                <input type="text" id="new-key-days" placeholder="Days" class="w-20 px-4 py-3 rounded-xl text-xs">
-                                <button onclick="generateKey()" class="flex-1 bg-[#10b981] text-black font-black uppercase italic text-[10px] rounded-xl tracking-widest">Create Key</button>
-                            </div>
-                            <div id="key-list" class="space-y-2 mt-4 max-h-40 overflow-y-auto"></div>
-                        </div>
-                        <div class="glass p-8 rounded-3xl border-white/10 space-y-4">
-                            <h4 class="text-xs font-black uppercase tracking-widest text-[#10b981]">Update Global News</h4>
-                            <textarea id="admin-note-input" class="w-full h-32 bg-white/5 border border-white/5 rounded-2xl p-4 text-xs" placeholder="Message..."></textarea>
-                            <button onclick="updateAnnouncement()" class="w-full py-4 border border-[#10b981] text-[#10b981] font-black uppercase italic text-[10px] rounded-xl tracking-widest hover:bg-[#10b981]/10">Broadcast</button>
-                        </div>
+                <div class="cyber-card p-8"><p class="text-[10px] font-bold text-gray-500 uppercase mb-4">Key Management</p>
+                    <input type="text" placeholder="Enter Target Key..." class="w-full mb-4">
+                    <div class="flex space-x-2">
+                        <button class="flex-1 py-3 bg-white/5 border border-white/10 text-gray-400 font-black text-[10px] rounded-xl uppercase">Add Time</button>
+                        <button class="flex-1 py-3 bg-[#ff4d4d]/10 border border-[#ff4d4d] text-[#ff4d4d] font-black text-[10px] rounded-xl uppercase">Delete Key</button>
                     </div>
                 </div>
             </div>
+            <div class="cyber-card p-8 mb-8 text-left">
+                <p class="text-[10px] font-bold text-gray-500 uppercase mb-4">Broadcast Intelligence</p>
+                <textarea id="admin-msg-input" placeholder="Enter announcement details..." class="w-full h-24 mb-4"></textarea>
+                <button onclick="pushToClient()" class="w-full py-4 bg-white text-black font-black uppercase italic rounded-xl text-[10px]">Push to Client</button>
+            </div>
+            <button onclick="logout()" class="text-gray-600 text-[10px] font-black uppercase hover:text-white transition">Exit Root</button>
         </div>
     </div>
 
     <div id="main-site">
         <nav class="fixed w-full z-[100] glass border-b border-white/5 h-20 flex items-center justify-between px-10">
             <div class="text-2xl font-black italic uppercase tracking-tighter">Panther</div>
-            <div class="hidden md:flex space-x-12 text-[9px] font-bold uppercase tracking-[0.4em] text-gray-500">
-                <a href="#home" class="hover:text-white transition translatable" data-en="Home" data-tr="Anasayfa">Home</a>
-                <a href="#protocol" class="hover:text-white transition translatable" data-en="Protocol" data-tr="Protokol">Protocol</a>
-                <a href="#features" class="hover:text-white transition translatable" data-en="Features" data-tr="Özellikler">Features</a>
-                <a href="#security" class="hover:text-white transition translatable" data-en="Security" data-tr="Güvenlik">Security</a>
-                <a href="#store" class="hover:text-white transition translatable" data-en="Store" data-tr="Mağaza">Store</a>
-            </div>
-            <div class="flex space-x-4 items-center">
-                <button onclick="toggleLang()" id="lang-btn" class="text-[9px] font-black text-gray-500 hover:text-white uppercase tracking-widest transition">EN / TR</button>
-                <button onclick="toggleLogin()" class="bg-white text-black px-8 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition hover:bg-gray-200 translatable" data-en="LOGIN" data-tr="GİRİŞ">LOGIN</button>
-            </div>
+            <button onclick="toggleLogin()" class="bg-white text-black px-8 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition hover:bg-gray-200">LOGIN</button>
         </nav>
 
-        <section id="home" class="min-h-screen flex flex-col justify-center items-center pt-20">
-            <div class="viewport"><img src="panther.png" id="panther-logo" alt="Panther Logo"></div>
-            <div class="text-center -mt-10">
-                <div class="flex justify-center items-center space-x-2 mb-4">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                    <span class="text-[9px] font-black text-green-500 tracking-[0.4em] uppercase translatable" data-en="Encrypted Bypass Active" data-tr="Şifreli Bypass Aktif">Encrypted Bypass Active</span>
-                </div>
-                <h1 class="text-7xl md:text-8xl font-black italic uppercase tracking-tighter">Panther</h1>
-                <p class="text-gray-600 text-[10px] tracking-[0.8em] font-bold uppercase mb-10 translatable" data-en="Become a Ghost in the Machine" data-tr="Makinedeki Hayalete Dönüş">Become a Ghost in the Machine</p>
-                <a href="#store" class="px-12 py-5 bg-white text-black rounded-2xl font-black italic text-[10px] tracking-widest hover:scale-105 transition uppercase translatable" data-en="Access Operations" data-tr="Operasyonlara Eriş">Access Operations</a>
-            </div>
+        <section class="min-h-screen flex flex-col justify-center items-center pt-20">
+            <h1 class="text-8xl font-black italic uppercase tracking-tighter mb-4">Panther</h1>
+            <p class="text-gray-600 text-[10px] tracking-[0.8em] font-bold uppercase mb-10">Become a Ghost in the Machine</p>
         </section>
 
         <section id="security" class="py-32 bg-[#010101] px-10 border-t border-white/5">
             <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-16">
                     <h2 class="text-4xl font-black italic uppercase mb-4">PC-Check Immunity</h2>
-                    <p class="text-gray-500 text-[10px] font-bold tracking-[0.3em] uppercase translatable" data-en="Bypassing Top-Tier Security Protocols" data-tr="Üst Düzey Güvenlik Protokollerini Aşma">Bypassing Top-Tier Security Protocols</p>
+                    <p class="text-gray-500 text-[10px] font-bold tracking-[0.3em] uppercase">Bypassing Top-Tier Security Protocols</p>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div class="cyber-card p-10 rounded-3xl text-center"><div class="laser"></div><img src="echo.png" alt="Echo" class="mx-auto mb-4"><h4 class="text-xs font-black uppercase italic text-gray-400 mb-1">Echo Scanner</h4><span class="text-[9px] text-green-500 font-bold uppercase tracking-widest">Undetected</span></div>
-                    <div class="cyber-card p-10 rounded-3xl text-center"><div class="laser"></div><img src="ocean.png" alt="Ocean" class="mx-auto mb-4"><h4 class="text-xs font-black uppercase italic text-gray-400 mb-1">Ocean Scanner</h4><span class="text-[9px] text-green-500 font-bold uppercase tracking-widest">Undetected</span></div>
-                    <div class="cyber-card p-10 rounded-3xl text-center"><div class="laser"></div><img src="storm.png" alt="Storm" class="mx-auto mb-4"><h4 class="text-xs font-black uppercase italic text-gray-400 mb-1">Storm Scanner</h4><span class="text-[9px] text-green-500 font-bold uppercase tracking-widest">Undetected</span></div>
-                    <div class="cyber-card p-10 rounded-3xl text-center"><div class="laser"></div><img src="nexora.png" alt="Nexora" class="mx-auto mb-4"><h4 class="text-xs font-black uppercase italic text-gray-400 mb-1">Nexora Scanner</h4><span class="text-[9px] text-green-500 font-bold uppercase tracking-widest">Undetected</span></div>
+                    <div class="cyber-card p-10 rounded-3xl text-center"><img src="echo.png" alt="Echo" class="scanner-img mx-auto mb-4"><h4 class="text-xs font-black uppercase italic text-gray-400 mb-1">Echo Scanner</h4><span class="text-[9px] text-green-500 font-bold uppercase tracking-widest">Undetected</span></div>
+                    <div class="cyber-card p-10 rounded-3xl text-center"><img src="ocean.png" alt="Ocean" class="scanner-img mx-auto mb-4"><h4 class="text-xs font-black uppercase italic text-gray-400 mb-1">Ocean Scanner</h4><span class="text-[9px] text-green-500 font-bold uppercase tracking-widest">Undetected</span></div>
+                    <div class="cyber-card p-10 rounded-3xl text-center"><img src="storm.png" alt="Storm" class="scanner-img mx-auto mb-4"><h4 class="text-xs font-black uppercase italic text-gray-400 mb-1">Storm Scanner</h4><span class="text-[9px] text-green-500 font-bold uppercase tracking-widest">Undetected</span></div>
+                    <div class="cyber-card p-10 rounded-3xl text-center"><img src="nexora.png" alt="Nexora" class="scanner-img mx-auto mb-4"><h4 class="text-xs font-black uppercase italic text-gray-400 mb-1">Nexora Scanner</h4><span class="text-[9px] text-green-500 font-bold uppercase tracking-widest">Undetected</span></div>
                 </div>
             </div>
-        </section>
-
-        <section id="features" class="py-32 px-10 border-t border-white/5">
-            <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="cyber-card p-6 rounded-2xl border-white/5"><h4 class="font-black italic text-sm">Silent Aimbot</h4><p class="text-[9px] text-gray-500 uppercase mt-2">Invisible vector lock-on mechanics</p></div>
-                <div class="cyber-card p-6 rounded-2xl border-white/5"><h4 class="font-black italic text-sm text-[#10b981]">Stream Proof</h4><p class="text-[9px] text-[#10b981]/80 uppercase mt-2">OBS & Discord screen-share stealth</p></div>
-                </div>
         </section>
     </div>
 
     <script>
         function toggleLogin() { document.getElementById('login-overlay').classList.toggle('active-flex'); }
+        function logout() { location.reload(); }
+
+        // HWID DETECTION (GPU ve Sistem Bilgisi)
+        function initHWID() {
+            document.getElementById('cpu-val').innerText = navigator.hardwareConcurrency + " Threads / " + (navigator.deviceMemory || "8") + "GB RAM";
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
+            if (gl) {
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                document.getElementById('gpu-val').innerText = renderer.split('/')[0].replace('ANGLE (', '').substring(0, 20);
+            }
+            document.getElementById('hwid-hash').innerText = btoa(navigator.userAgent).substring(0, 12).toUpperCase();
+        }
+
         function authenticate() {
-            const key = document.getElementById('license-input').value;
-            if(key.length > 3) {
+            const input = document.getElementById('license-input').value;
+            const errorEl = document.getElementById('error-msg');
+            
+            if(input === "ADMIN-PANTHER") {
+                document.getElementById('login-overlay').classList.remove('active-flex');
+                document.getElementById('main-site').style.display = 'none';
+                document.getElementById('admin-overlay').classList.add('active-flex');
+            } else if(input.length > 5) {
+                // Burada HWID kontrolü simülasyonu yapılabilir
                 document.getElementById('login-overlay').classList.remove('active-flex');
                 document.getElementById('main-site').style.display = 'none';
                 document.getElementById('dashboard-overlay').classList.add('active-flex');
+            } else {
+                errorEl.innerText = "INVALID ACCESS KEY";
+                errorEl.classList.remove('hidden');
             }
         }
-        function logout() { location.reload(); }
-        function switchTab(id) {
-            document.getElementById('user-dash').classList.add('hidden');
-            document.getElementById('admin-dash').classList.add('hidden');
-            document.getElementById(id).classList.remove('hidden');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        }
-        function generateKey() {
-            const days = document.getElementById('new-key-days').value || "30";
-            const key = "PNTR-" + Math.random().toString(36).substr(2, 8).toUpperCase();
-            const div = document.createElement('div');
-            div.className = "flex justify-between text-[10px] font-mono p-3 bg-black rounded-lg border border-white/5";
-            div.innerHTML = `<span>${key} (${days}D)</span><button onclick="this.parentElement.remove()" class="text-red-500">DEL</button>`;
-            document.getElementById('key-list').prepend(div);
-        }
-        function updateAnnouncement() {
-            const msg = document.getElementById('admin-note-input').value;
-            document.getElementById('live-announcement').innerText = `"${msg}"`;
-        }
-        function toggleLang() {
-            currentLang = currentLang === 'en' ? 'tr' : 'en';
-            document.querySelectorAll('.translatable').forEach(el => el.innerText = el.getAttribute(`data-${currentLang}`));
-        }
+
+        window.onload = initHWID;
     </script>
 </body>
 </html>
