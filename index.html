@@ -268,26 +268,92 @@
         Panther Global Stealth Operations / Est. 2026
     </footer>
 
-    <script>
-        function toggleLogin() {
-            const overlay = document.getElementById('login-overlay');
-            overlay.classList.toggle('active');
-        }
+   <script>
+    // 1. DİNAMİK DOSYA YÜKLEME (GitHub/VDS için)
+    async function loadExternalComponents() {
+        try {
+            const response = await fetch('login-overlay.html');
+            const data = await response.text();
+            
+            const placeholder = document.getElementById('login-placeholder');
+            if (placeholder) {
+                placeholder.innerHTML = data;
+                
+                // Form yüklendikten sonra handleLogin'e bağla
+                const loginForm = document.querySelector('#login-overlay form');
+                if (loginForm) {
+                    loginForm.onsubmit = handleLogin;
+                }
+                
+                // Eğer sayfa o an Türkçe ise, yeni yüklenen login kısmını da anında çevir
+                if (currentLang === 'tr') {
+                    const elements = document.querySelectorAll('.translatable');
+                    elements.forEach(el => {
+                        el.innerText = el.getAttribute(`data-tr`);
+                    });
+                }
+            }
+        } catch (err) {
+            console.error("Dosya yükleme hatası:", err);
+        }
+    }
 
-        // LANGUAGE TOGGLE SYSTEM
-        let currentLang = 'en';
-        function toggleLang() {
-            currentLang = currentLang === 'en' ? 'tr' : 'en';
-            
-            // Buton metni
-            document.getElementById('lang-btn').innerText = currentLang === 'en' ? 'EN / TR' : 'TR / EN';
+    // =====================================================================
+    // 2. SENİN EKLEDİĞİN KISIM (Hiçbir şey eksiltilmedi)
+    // =====================================================================
+    
+    function toggleLogin() {
+        const overlay = document.getElementById('login-overlay');
+        overlay.classList.toggle('active');
+    }
 
-            // data-en ve data-tr özniteliği olan HER ŞEYİ çevir
-            const elements = document.querySelectorAll('.translatable');
-            elements.forEach(el => {
-                el.innerText = el.getAttribute(`data-${currentLang}`);
-            });
-        }
-    </script>
+    // LANGUAGE TOGGLE SYSTEM
+    let currentLang = 'en';
+    function toggleLang() {
+        currentLang = currentLang === 'en' ? 'tr' : 'en';
+        
+        // Buton metni
+        document.getElementById('lang-btn').innerText = currentLang === 'en' ? 'EN / TR' : 'TR / EN';
+
+        // data-en ve data-tr özniteliği olan HER ŞEYİ çevir
+        const elements = document.querySelectorAll('.translatable');
+        elements.forEach(el => {
+            el.innerText = el.getAttribute(`data-${currentLang}`);
+        });
+    }
+
+    // =====================================================================
+    // 3. DİĞER GİRİŞ VE PANEL KONTROLLERİ
+    // =====================================================================
+    
+    function closeAllOverlays() {
+        const panels = ['login-overlay', 'dashboard-overlay', 'admin-overlay'];
+        panels.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('active');
+        });
+    }
+
+    function handleLogin(event) {
+        if (event) event.preventDefault();
+        const keyInput = document.getElementById('license-key').value;
+        
+        closeAllOverlays();
+
+        if (keyInput.toUpperCase() === 'ADMIN') {
+            const adminPanel = document.getElementById('admin-overlay');
+            if (adminPanel) adminPanel.classList.add('active');
+            else document.getElementById('dashboard-overlay').classList.add('active');
+        } else if (keyInput.trim() !== "") {
+            document.getElementById('dashboard-overlay').classList.add('active');
+        } else {
+            alert("Please enter a valid key!");
+            toggleLogin(); // Boş girilirse login ekranını tekrar aç
+        }
+    }
+
+    // SAYFA AÇILDIĞINDA ÇALIŞTIR
+    document.addEventListener('DOMContentLoaded', loadExternalComponents);
+</script>
 </body>
 </html>
