@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panther | Admin Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background: #050505; color: white; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; }
+        
+        .admin-glass {
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 0, 0, 0.05);
+            transition: 0.3s;
+        }
+        .admin-glass:hover { border-color: rgba(220, 38, 38, 0.2); }
+
+        .btn-red {
+            background: #dc2626;
+            color: white;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
+        }
+        .btn-red:hover { background: #ff0000; transform: translateY(-2px); box-shadow: 0 0 30px rgba(220, 38, 38, 0.4); }
+
+        input, textarea {
+            background: #0f0f0f !important;
+            border: 1px solid #1f1f1f !important;
+            color: #ef4444 !important;
+            outline: none;
+        }
+        input:focus { border-color: #dc2626 !important; }
+        
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #dc2626; box-shadow: 0 0 10px #dc2626; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+    <div class="max-w-6xl mx-auto flex justify-between items-end mb-16 border-b border-red-600/20 pb-8">
+        <div>
+            <h1 class="text-4xl font-black italic uppercase tracking-tighter">Admin <span class="text-red-600">Command</span></h1>
+            <p class="text-[10px] text-gray-500 font-bold tracking-[0.5em] mt-2 italic">ROOT ACCESS GRANTED // SESSION: ACTIVE</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="status-dot"></div>
+            <span class="text-[10px] font-black uppercase tracking-widest text-red-600">Master Server Online</span>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <div class="admin-glass p-8 rounded-[2rem] flex flex-col justify-between">
+            <div>
+                <h3 class="text-xs font-black uppercase tracking-[0.3em] text-gray-400 mb-6 italic">License Generator</h3>
+                <div class="space-y-4">
+                    <input type="number" id="key_days" placeholder="Duration (Days)" class="w-full p-4 rounded-xl text-sm">
+                    <input type="text" id="key_output" readonly placeholder="Generated Key" class="w-full p-4 rounded-xl text-sm font-mono tracking-widest opacity-60">
+                </div>
+            </div>
+            <button onclick="generateKey()" class="btn-red w-full py-4 mt-6 rounded-xl tracking-widest">Create Master Key</button>
+        </div>
+
+        <div class="admin-glass p-8 rounded-[2rem] lg:col-span-1">
+            <h3 class="text-xs font-black uppercase tracking-[0.3em] text-gray-400 mb-6 italic">Global Broadcast</h3>
+            <div class="space-y-4">
+                <input type="text" id="ann_title" placeholder="Message Title" class="w-full p-4 rounded-xl text-sm">
+                <textarea id="ann_body" placeholder="Write your message here..." class="w-full p-4 rounded-xl text-sm h-24 resize-none"></textarea>
+            </div>
+            <button onclick="sendBroadcast()" class="w-full py-4 mt-6 bg-white text-black font-black italic rounded-xl uppercase tracking-widest hover:bg-gray-200 transition">Send To All Users</button>
+        </div>
+
+        <div class="admin-glass p-8 rounded-[2rem]">
+            <h3 class="text-xs font-black uppercase tracking-[0.3em] text-gray-400 mb-6 italic">System Metrics</h3>
+            <div class="space-y-6">
+                <div class="flex justify-between border-b border-white/5 pb-2">
+                    <span class="text-[10px] uppercase font-bold text-gray-500">Total Licenses</span>
+                    <span class="text-sm font-black italic">1,242</span>
+                </div>
+                <div class="flex justify-between border-b border-white/5 pb-2">
+                    <span class="text-[10px] uppercase font-bold text-gray-500">Active Users</span>
+                    <span class="text-sm font-black italic text-green-500">84</span>
+                </div>
+                <div class="flex justify-between border-b border-white/5 pb-2">
+                    <span class="text-[10px] uppercase font-bold text-gray-500">Server Load</span>
+                    <span class="text-sm font-black italic text-red-600">12%</span>
+                </div>
+            </div>
+            <div class="mt-8 p-4 bg-red-600/5 rounded-xl border border-red-600/10">
+                <p class="text-[9px] text-red-600 font-bold uppercase tracking-widest text-center">Auto-Purge Expired Keys: ON</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="max-w-6xl mx-auto mt-8">
+        <div class="admin-glass p-8 rounded-[2rem]">
+            <h3 class="text-xs font-black uppercase tracking-[0.3em] text-gray-400 mb-6 italic">Recent Operations</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="border-b border-white/5 text-[10px] uppercase text-gray-500 tracking-widest">
+                            <th class="pb-4">Key ID</th>
+                            <th class="pb-4">Duration</th>
+                            <th class="pb-4">Status</th>
+                            <th class="pb-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="font-mono text-xs">
+                        <tr class="border-b border-white/5">
+                            <td class="py-4 text-red-600">PANTHER-A92B-X1</td>
+                            <td class="py-4 text-gray-400">30 DAYS</td>
+                            <td class="py-4 text-green-500">UNUSED</td>
+                            <td class="py-4"><button class="text-white hover:text-red-600">REVOKE</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Sayfa açılır açılmaz şifre sorar
+    const masterPass = prompt("MASTER ACCESS REQUIRED:");
+    
+    if (masterPass !== "ADMIN") {
+        alert("ACCESS DENIED. SYSTEM LOCKING DOWN.");
+        window.location.href = "index.html"; // Yanlışsa ana sayfaya atar
+    }
+
+        // Rastgele Key Üretme
+        function generateKey() {
+            const days = document.getElementById('key_days').value || "30";
+            const randomString = Math.random().toString(36).substr(2, 8).toUpperCase();
+            const finalKey = `PANTHER-${randomString}-${days}D`;
+            document.getElementById('key_output').value = finalKey;
+            
+            // Buraya key'i kopyalama veya veritabanına atma kodu gelecek
+            console.log("New Key Created: " + finalKey);
+        }
+
+        // Duyuru Gönderme
+        function sendBroadcast() {
+            const title = document.getElementById('ann_title').value;
+            const body = document.getElementById('ann_body').value;
+            
+            if(!title || !body) {
+                alert("LİSANS BAŞLIĞI VEYA MESAJI EKSİK AMK!");
+                return;
+            }
+
+            alert("DUYURU TÜM KULLANICILARA GÖNDERİLDİ: " + title);
+        }
+    </script>
+</body>
+</html>

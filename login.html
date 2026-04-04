@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panther | Identity Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background: #000; color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
+        
+        /* Arka plan efektleri */
+        .bg-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%); z-index: -1; }
+        .cyber-grid { position: absolute; inset: 0; background-image: linear-gradient(to right, #111 1px, transparent 1px), linear-gradient(to bottom, #111 1px, transparent 1px); background-size: 40px 40px; z-index: -2; opacity: 0.5; }
+
+        /* Modern Glassmorphism */
+        .auth-card {
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-cyber {
+            background: rgba(255, 255, 255, 0.02) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            color: #10b981 !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .input-cyber:focus {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.1);
+            transform: scale(1.02);
+        }
+
+        /* Yükleme barı animasyonu */
+        .scan-line { position: absolute; height: 2px; width: 100%; background: #10b981; top: 0; left: 0; animation: scan 3s infinite linear; opacity: 0.5; box-shadow: 0 0 15px #10b981; }
+        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="cyber-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="auth-card p-12 rounded-[3rem] w-full max-w-md relative overflow-hidden">
+        <div class="scan-line"></div>
+        
+        <div class="text-center mb-10">
+            <div class="inline-block p-4 rounded-2xl bg-[#10b981]/5 mb-4">
+                <svg class="w-10 h-10 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-black italic uppercase tracking-tighter">System <span class="text-[#10b981]">Access</span></h2>
+            <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.4em] mt-2">Identity Verification Required</p>
+        </div>
+
+        <div class="space-y-6">
+            <div class="relative group">
+                <label class="text-[9px] font-black uppercase text-gray-600 tracking-widest ml-4 mb-2 block">License Key</label>
+                <input type="text" id="license_input" placeholder="PANTHER-XXXX-XXXX" 
+                       class="input-cyber w-full p-5 rounded-2xl text-center font-mono tracking-[0.2em] text-sm uppercase outline-none">
+            </div>
+
+            <button onclick="handleLogin()" 
+                    class="group relative w-full py-5 bg-[#10b981] text-black font-black italic rounded-2xl uppercase tracking-widest overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-[0_20px_40px_-10px rgba(16,185,129,0.3)]">
+                <span class="relative z-10">Initialize Protocol</span>
+                <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+            </button>
+        </div>
+
+        <div class="mt-10 pt-8 border-t border-white/5 text-center">
+            <p class="text-[10px] text-gray-600 font-bold uppercase tracking-widest">
+                Don't have access? <a href="https://discord.gg/yourlink" class="text-white hover:text-[#10b981] transition">Contact Command</a>
+            </p>
+            <a href="index.html" class="inline-block mt-4 text-[9px] text-gray-700 hover:text-white transition uppercase font-black tracking-[0.2em]">← Abort Sequence</a>
+        </div>
+    </div>
+
+    <script>
+        async function handleLogin() {
+            const btn = document.querySelector('button');
+            const key = document.getElementById('license_input').value.trim();
+
+            if(!key) {
+                alert("LİSANS GİR AMK!");
+                return;
+            }
+
+            // Görsel efekt: Buton yükleniyor modu
+            btn.innerText = "VERIFYING...";
+            btn.style.opacity = "0.7";
+
+            // GITHUB VEYA TEST KONTROLÜ
+            setTimeout(() => {
+                if(key === "PANTHER-PRO-2026") {
+                    // Giriş başarılıysa Dashboard'a fırlatıyoruz
+                    window.location.href = "dashboard.html";
+                } else {
+                    alert("GEÇERSİZ PROTOKOL ANAHTARI!");
+                    btn.innerText = "INITIALIZE PROTOCOL";
+                    btn.style.opacity = "1";
+                }
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
