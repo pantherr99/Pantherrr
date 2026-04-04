@@ -269,7 +269,9 @@
     </footer>
 
    <script>
-    // 1. DİNAMİK DOSYA YÜKLEME (GitHub/VDS için)
+    let currentLang = 'en';
+
+    // 1. DİNAMİK DOSYA YÜKLEME
     async function loadExternalComponents() {
         try {
             const response = await fetch('login-overlay.html');
@@ -279,16 +281,11 @@
             if (placeholder) {
                 placeholder.innerHTML = data;
                 
-                // Form yüklendikten sonra handleLogin'e bağla
                 const loginForm = document.querySelector('#login-overlay form');
-                if (loginForm) {
-                    loginForm.onsubmit = handleLogin;
-                }
+                if (loginForm) loginForm.onsubmit = handleLogin;
                 
-                // Eğer sayfa o an Türkçe ise, yeni yüklenen login kısmını da anında çevir
                 if (currentLang === 'tr') {
-                    const elements = document.querySelectorAll('.translatable');
-                    elements.forEach(el => {
+                    document.querySelectorAll('.translatable').forEach(el => {
                         el.innerText = el.getAttribute(`data-tr`);
                     });
                 }
@@ -298,61 +295,113 @@
         }
     }
 
-    // =====================================================================
-    // 2. SENİN EKLEDİĞİN KISIM (Hiçbir şey eksiltilmedi)
-    // =====================================================================
-    
+    // 2. TOGGLE VE DİL SİSTEMİ
     function toggleLogin() {
         const overlay = document.getElementById('login-overlay');
-        overlay.classList.toggle('active');
+        if(overlay) overlay.classList.toggle('active');
     }
 
-    // LANGUAGE TOGGLE SYSTEM
-    let currentLang = 'en';
     function toggleLang() {
         currentLang = currentLang === 'en' ? 'tr' : 'en';
-        
-        // Buton metni
         document.getElementById('lang-btn').innerText = currentLang === 'en' ? 'EN / TR' : 'TR / EN';
 
-        // data-en ve data-tr özniteliği olan HER ŞEYİ çevir
-        const elements = document.querySelectorAll('.translatable');
-        elements.forEach(el => {
+        document.querySelectorAll('.translatable').forEach(el => {
             el.innerText = el.getAttribute(`data-${currentLang}`);
         });
     }
 
-    // =====================================================================
-    // 3. DİĞER GİRİŞ VE PANEL KONTROLLERİ
-    // =====================================================================
-    
     function closeAllOverlays() {
-        const panels = ['login-overlay', 'dashboard-overlay', 'admin-overlay'];
-        panels.forEach(id => {
+        ['login-overlay', 'dashboard-overlay', 'admin-overlay'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.remove('active');
         });
     }
 
+    // 3. HWID VE GİRİŞ SİSTEMİ (Simülasyon)
     function handleLogin(event) {
         if (event) event.preventDefault();
-        const keyInput = document.getElementById('license-key').value;
+        const keyInput = document.getElementById('license-key').value.trim();
         
         closeAllOverlays();
 
+        // Admin girişi kontrolü
         if (keyInput.toUpperCase() === 'ADMIN') {
-            const adminPanel = document.getElementById('admin-overlay');
-            if (adminPanel) adminPanel.classList.add('active');
-            else document.getElementById('dashboard-overlay').classList.add('active');
-        } else if (keyInput.trim() !== "") {
-            document.getElementById('dashboard-overlay').classList.add('active');
-        } else {
-            alert("Please enter a valid key!");
-            toggleLogin(); // Boş girilirse login ekranını tekrar aç
+            document.getElementById('admin-overlay').classList.add('active');
+            return;
         }
+
+        if (keyInput === "") {
+            alert("Lütfen geçerli bir key girin!");
+            toggleLogin();
+            return;
+        }
+
+        // --- HWID Simülasyonu ---
+        const fakeHWID = navigator.userAgent.length + "-" + screen.width; 
+        const savedHWID = localStorage.getItem(`hwid_${keyInput}`);
+        const loginAttempts = parseInt(localStorage.getItem(`attempts_${keyInput}`) || "0");
+
+        if (!savedHWID) {
+            // İlk kez bu bilgisayardan giriliyor
+            localStorage.setItem(`hwid_${keyInput}`, fakeHWID);
+            localStorage.setItem(`attempts_${keyInput}`, "1");
+            alert("Lisans bu cihaza kilitlendi!");
+        } else if (savedHWID !== fakeHWID) {
+            // Farklı cihaz tespit edildi!
+            if (loginAttempts >= 2) {
+                alert("BU LİSANS BİRDEN FAZLA CİHAZDA DENENDİĞİ İÇİN İPTAL EDİLMİŞTİR!");
+                localStorage.setItem(`status_${keyInput}`, "BANNED");
+                toggleLogin();
+                return;
+            } else {
+                alert("Farklı cihaz algılandı! 2. denemede lisansınız iptal edilecek.");
+                localStorage.setItem(`attempts_${keyInput}`, loginAttempts + 1);
+            }
+        }
+
+        // Ban kontrolü
+        if (localStorage.getItem(`status_${keyInput}`) === "BANNED") {
+            alert("Bu lisans banlıdır.");
+            toggleLogin();
+            return;
+        }
+
+        // Başarılı giriş -> Dashboard'u aç
+        document.getElementById('dashboard-overlay').classList.add('active');
     }
 
-    // SAYFA AÇILDIĞINDA ÇALIŞTIR
+    // 4. ADMIN PANELİ FONKSİYONLARI
+    function generateKey() {
+        const keyName = document.getElementById('admin-new-key').value;
+        if (!keyName) return alert("Bir key adı girin!");
+        
+        const list = document.getElementById('active-keys-list');
+        list.innerHTML += `<div class="flex justify-between border-b border-white/5 pb-1"><span>${keyName}</span><span class="text-green-500">Active</span></div>`;
+        alert(`Key Başarıyla Oluşturuldu: ${keyName}`);
+    }
+
+    function deleteKey() {
+        alert("Key sistemden silindi!");
+    }
+
+    function addTime() {
+        const key = document.getElementById('target-key').value;
+        const day = document.getElementById('add-time-val').value;
+        if (!key || !day) return alert("Eksik bilgi!");
+        alert(`${key} lisansına ${day} gün eklendi.`);
+    }
+
+    function postAnnouncement() {
+        const msg = document.getElementById('admin-announcement-input').value;
+        if (!msg) return alert("Mesaj boş olamaz!");
+        
+        // Dashboard'daki duyuru alanını güncelle
+        const dashAnnounce = document.querySelector('#dashboard-overlay p.text-white');
+        if (dashAnnounce) dashAnnounce.innerText = msg;
+        
+        alert("Duyuru tüm kullanıcılara iletildi!");
+    }
+
     document.addEventListener('DOMContentLoaded', loadExternalComponents);
 </script>
 </body>
