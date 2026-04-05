@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { 
     getDatabase, 
     ref, 
@@ -6,15 +6,21 @@ import {
     get, 
     child, 
     remove, 
-    onValue  // <--- BURAYA EKLE
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    onValue // <-- EKSİK OLAN BUYDU, DİKKAT!
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 const firebaseConfig = {
-    // Senin kendi config bilgilerin burada kalsın
+    apiKey: "AIzaSyCjMAo3sazNWx5aNFS9RnOahAqNOxyMmjA",
+    authDomain: "panter-f9c0e.firebaseapp.com",
+    databaseURL: "panter-f9c0e.firebasestorage.app",
+    projectId: "panter-f9c0e",
+    storageBucket: "panter-f9c0e.firebasestorage.app",
+    messagingSenderId: "123104603113",
+    appId: "1:123104603113:web:88d6eb21f9f27295e1f978"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Hepsini export ettiğinden emin ol
+// BURADAKİ LİSTEDE onValue OLMAZSA admin.html LİSANS İŞLEMLERİNİ YAPAMAZ
 export { db, ref, set, get, child, remove, onValue };
