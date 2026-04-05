@@ -37,9 +37,7 @@
         ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
     </style>
 </head>
-<body class="p-6 md:p-12">
-
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center md:items-end mb-16 border-b border-white/5 pb-10">
+<body class="p-6 md:p-12"> <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center md:items-end mb-16 border-b border-white/5 pb-10">
         <div class="text-center md:text-left">
             <h1 class="text-5xl font-black italic uppercase tracking-tighter leading-none">Command <span class="text-red-600">Center</span></h1>
             <p class="text-[10px] text-gray-600 font-bold tracking-[0.5em] mt-4 uppercase opacity-50">Panther Security Systems v4.0 // Root Access</p>
@@ -126,6 +124,7 @@
         // Global Fonksiyonlar (HTML onclick'ler için window'a bağladık)
         window.addLog = (msg) => {
             const container = document.getElementById('log_container');
+            if(!container) return;
             const time = new Date().toLocaleTimeString();
             const p = document.createElement('p');
             p.className = "text-[9px] font-mono text-red-600/60 mb-1 uppercase";
@@ -174,7 +173,8 @@
 
         // Key Oluşturma
         document.getElementById('gen_btn').onclick = async () => {
-            const days = document.getElementById('key_days').value || 30;
+            const daysInput = document.getElementById('key_days');
+            const days = daysInput ? daysInput.value : 30;
             const rand = Math.random().toString(36).substr(2, 6).toUpperCase();
             const newKey = `PANTHER-${rand}-${days}D`;
             
@@ -184,9 +184,10 @@
                     status: 'UNUSED',
                     expireDate: 0
                 });
-                document.getElementById('key_output').value = newKey;
+                const output = document.getElementById('key_output');
+                if(output) output.value = newKey;
                 window.addLog(`KEY DEPLOYED: ${newKey}`);
-            } catch (e) { alert("Firebase Write Error!"); }
+            } catch (e) { console.error(e); alert("Firebase Write Error!"); }
         };
 
         // Key Kopyalama
@@ -198,13 +199,15 @@
 
         // Duyuru Gönderme
         document.getElementById('broadcast_btn').onclick = async () => {
-            const t = document.getElementById('ann_title').value;
-            const b = document.getElementById('ann_body').value;
+            const titleInput = document.getElementById('ann_title');
+            const bodyInput = document.getElementById('ann_body');
+            const t = titleInput ? titleInput.value : "";
+            const b = bodyInput ? bodyInput.value : "";
             if(!t || !b) return;
             await set(ref(db, 'announcement'), { title: t, body: b, time: Date.now() });
             window.addLog(`BROADCAST PUSHED: ${t}`);
-            document.getElementById('ann_title').value = "";
-            document.getElementById('ann_body').value = "";
+            if(titleInput) titleInput.value = "";
+            if(bodyInput) bodyInput.value = "";
         };
 
         // Tekli Silme
