@@ -7,34 +7,38 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { background: #050505; color: white; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; }
+        body { background: #050505; color: white; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
         
-        .admin-glass {
-            background: rgba(10, 10, 10, 0.6);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 0, 0, 0.05);
-            transition: 0.3s;
+        /* OVERLAY FIX - Tarayıcıyı zorla kapatan CSS */
+        #admin_login_overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center;
         }
-        .admin-glass:hover { border-color: rgba(220, 38, 38, 0.2); }
+        .login-box {
+            background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(25px);
+            border: 1px solid rgba(220, 38, 38, 0.3); padding: 3rem; border-radius: 2rem;
+            text-align: center; width: 90%; max-width: 400px;
+            box-shadow: 0 0 50px rgba(220, 38, 38, 0.1);
+        }
+
+        .admin-glass {
+            background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 0, 0, 0.05); transition: 0.3s;
+        }
+        .admin-glass:hover { border-color: rgba(220, 38, 38, 0.3); }
 
         .btn-red {
-            background: #dc2626;
-            color: white;
-            font-weight: 900;
-            font-style: italic;
-            text-transform: uppercase;
-            transition: all 0.3s;
+            background: #dc2626; color: white; font-weight: 900; font-style: italic;
+            text-transform: uppercase; transition: all 0.3s;
             box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
         }
         .btn-red:hover { background: #ff0000; transform: translateY(-2px); box-shadow: 0 0 30px rgba(220, 38, 38, 0.4); }
 
         input, textarea {
-            background: #0f0f0f !important;
-            border: 1px solid #1f1f1f !important;
-            color: #ef4444 !important;
-            outline: none;
+            background: #0f0f0f !important; border: 1px solid #1f1f1f !important;
+            color: #ef4444 !important; outline: none; transition: 0.2s;
         }
-        input:focus { border-color: #dc2626 !important; }
+        input:focus { border-color: #dc2626 !important; box-shadow: 0 0 10px rgba(220, 38, 38, 0.1); }
         
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #dc2626; box-shadow: 0 0 10px #dc2626; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -42,10 +46,21 @@
 </head>
 <body class="p-6 md:p-12">
 
+    <div id="admin_login_overlay">
+        <div class="login-box">
+            <h2 class="text-2xl font-black italic uppercase text-red-600 mb-2 tracking-tighter">Master Access</h2>
+            <p class="text-[10px] text-gray-500 font-bold tracking-widest mb-8 uppercase">Authentication Required</p>
+            <input type="password" id="master_input" placeholder="PROTOCOL KEY" 
+                   class="w-full p-4 rounded-xl text-center mb-6 border-red-600/20 font-mono tracking-[0.5em]">
+            <button onclick="verifyAdmin()" class="btn-red w-full py-4 rounded-xl tracking-widest text-xs">Authorize</button>
+            <p id="error_msg" class="text-red-600 text-[10px] font-black mt-4 uppercase opacity-0 transition-opacity duration-300">Invalid Protocol - Access Denied</p>
+        </div>
+    </div>
+
     <div class="max-w-6xl mx-auto flex justify-between items-end mb-16 border-b border-red-600/20 pb-8">
         <div>
             <h1 class="text-4xl font-black italic uppercase tracking-tighter">Admin <span class="text-red-600">Command</span></h1>
-            <p class="text-[10px] text-gray-500 font-bold tracking-[0.5em] mt-2 italic">ROOT ACCESS GRANTED // SESSION: ACTIVE</p>
+            <p class="text-[10px] text-gray-500 font-bold tracking-[0.5em] mt-2 italic uppercase">Root Access Granted // System Stable</p>
         </div>
         <div class="flex items-center gap-3">
             <div class="status-dot"></div>
@@ -54,7 +69,6 @@
     </div>
 
     <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        
         <div class="admin-glass p-8 rounded-[2rem] flex flex-col justify-between">
             <div>
                 <h3 class="text-xs font-black uppercase tracking-[0.3em] text-gray-400 mb-6 italic">License Generator</h3>
@@ -63,16 +77,16 @@
                     <input type="text" id="key_output" readonly placeholder="Generated Key" class="w-full p-4 rounded-xl text-sm font-mono tracking-widest opacity-60">
                 </div>
             </div>
-            <button onclick="generateKey()" class="btn-red w-full py-4 mt-6 rounded-xl tracking-widest">Create Master Key</button>
+            <button onclick="generateKey()" class="btn-red w-full py-4 mt-6 rounded-xl tracking-widest text-xs">Create Master Key</button>
         </div>
 
-        <div class="admin-glass p-8 rounded-[2rem] lg:col-span-1">
+        <div class="admin-glass p-8 rounded-[2rem]">
             <h3 class="text-xs font-black uppercase tracking-[0.3em] text-gray-400 mb-6 italic">Global Broadcast</h3>
             <div class="space-y-4">
                 <input type="text" id="ann_title" placeholder="Message Title" class="w-full p-4 rounded-xl text-sm">
                 <textarea id="ann_body" placeholder="Write your message here..." class="w-full p-4 rounded-xl text-sm h-24 resize-none"></textarea>
             </div>
-            <button onclick="sendBroadcast()" class="w-full py-4 mt-6 bg-white text-black font-black italic rounded-xl uppercase tracking-widest hover:bg-gray-200 transition">Send To All Users</button>
+            <button onclick="sendBroadcast()" class="w-full py-4 mt-6 bg-white text-black font-black italic rounded-xl uppercase tracking-widest text-xs hover:bg-gray-200 transition">Broadcast To All</button>
         </div>
 
         <div class="admin-glass p-8 rounded-[2rem]">
@@ -80,22 +94,19 @@
             <div class="space-y-6">
                 <div class="flex justify-between border-b border-white/5 pb-2">
                     <span class="text-[10px] uppercase font-bold text-gray-500">Total Licenses</span>
-                    <span class="text-sm font-black italic">1,242</span>
+                    <span id="total_licenses" class="text-sm font-black italic">0</span>
                 </div>
                 <div class="flex justify-between border-b border-white/5 pb-2">
                     <span class="text-[10px] uppercase font-bold text-gray-500">Active Users</span>
-                    <span class="text-sm font-black italic text-green-500">84</span>
+                    <span id="active_users_count" class="text-sm font-black italic text-green-500">0</span>
                 </div>
                 <div class="flex justify-between border-b border-white/5 pb-2">
-                    <span class="text-[10px] uppercase font-bold text-gray-500">Server Load</span>
-                    <span class="text-sm font-black italic text-red-600">12%</span>
+                    <span class="text-[10px] uppercase font-bold text-gray-500">Server Status</span>
+                    <span class="text-sm font-black italic text-red-600 uppercase">Secured</span>
                 </div>
             </div>
-            <div class="mt-8 p-4 bg-red-600/5 rounded-xl border border-red-600/10">
-                <p class="text-[9px] text-red-600 font-bold uppercase tracking-widest text-center">Auto-Purge Expired Keys: ON</p>
-            </div>
+            <button onclick="clearAllData()" class="w-full mt-10 text-[9px] text-gray-600 font-bold uppercase tracking-widest hover:text-red-600 transition">Wipe All Database</button>
         </div>
-
     </div>
 
     <div class="max-w-6xl mx-auto mt-8">
@@ -111,51 +122,109 @@
                             <th class="pb-4">Action</th>
                         </tr>
                     </thead>
-                    <tbody class="font-mono text-xs">
-                        <tr class="border-b border-white/5">
-                            <td class="py-4 text-red-600">PANTHER-A92B-X1</td>
-                            <td class="py-4 text-gray-400">30 DAYS</td>
-                            <td class="py-4 text-green-500">UNUSED</td>
-                            <td class="py-4"><button class="text-white hover:text-red-600">REVOKE</button></td>
-                        </tr>
-                    </tbody>
+                    <tbody id="key_table_body" class="font-mono text-xs"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <script>
-    // Sayfa açılır açılmaz şifre sorar
-    const masterPass = prompt("MASTER ACCESS REQUIRED:");
-    
-    if (masterPass !== "ADMIN") {
-        alert("ACCESS DENIED. SYSTEM LOCKING DOWN.");
-        window.location.href = "index.html"; // Yanlışsa ana sayfaya atar
-    }
+        // --- 1. GİRİŞ VE DOĞRULAMA FİX ---
+        const overlay = document.getElementById('admin_login_overlay');
+        const masterInput = document.getElementById('master_input');
+        const errorMsg = document.getElementById('error_msg');
 
-        // Rastgele Key Üretme
-        function generateKey() {
-            const days = document.getElementById('key_days').value || "30";
-            const randomString = Math.random().toString(36).substr(2, 8).toUpperCase();
-            const finalKey = `PANTHER-${randomString}-${days}D`;
-            document.getElementById('key_output').value = finalKey;
+        function verifyAdmin() {
+            const pass = masterInput.value.trim().toUpperCase();
             
-            // Buraya key'i kopyalama veya veritabanına atma kodu gelecek
-            console.log("New Key Created: " + finalKey);
-        }
-
-        // Duyuru Gönderme
-        function sendBroadcast() {
-            const title = document.getElementById('ann_title').value;
-            const body = document.getElementById('ann_body').value;
-            
-            if(!title || !body) {
-                alert("LİSANS BAŞLIĞI VEYA MESAJI EKSİK AMK!");
-                return;
+            if (pass === "ADMIN") {
+                overlay.style.display = 'none'; // KESİN KAPATMA
+                sessionStorage.setItem('panther_admin_session', 'true');
+                renderKeys();
+            } else {
+                errorMsg.style.opacity = '1';
+                masterInput.value = "";
+                setTimeout(() => { errorMsg.style.opacity = '0'; }, 2000);
             }
-
-            alert("DUYURU TÜM KULLANICILARA GÖNDERİLDİ: " + title);
         }
+
+        // Enter tuşu dinleyici
+        masterInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') verifyAdmin();
+        });
+
+        // Sayfa yüklendiğinde session kontrolü
+        if (sessionStorage.getItem('panther_admin_session') === 'true') {
+            overlay.style.display = 'none';
+        }
+
+        // --- 2. CORE FONKSİYONLAR ---
+        function renderKeys() {
+            const keys = JSON.parse(localStorage.getItem('panther_keys')) || [];
+            const tbody = document.getElementById('key_table_body');
+            const totalDisplay = document.getElementById('total_licenses');
+            
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            totalDisplay.innerText = keys.length;
+
+            keys.forEach((k, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-white/5 hover:bg-white/[0.02] transition";
+                tr.innerHTML = `
+                    <td class="py-4 text-red-600 font-bold">${k.key}</td>
+                    <td class="py-4 text-gray-400">${k.days} DAYS</td>
+                    <td class="py-4"><span class="px-2 py-1 rounded text-[10px] font-black ${k.status === 'UNUSED' ? 'bg-green-500/10 text-green-500' : 'bg-yellow-500/10 text-yellow-500'}">${k.status}</span></td>
+                    <td class="py-4"><button onclick="deleteKey(${index})" class="text-white hover:text-red-600 font-bold uppercase text-[10px] tracking-widest transition">Revoke</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function generateKey() {
+            const daysVal = document.getElementById('key_days').value || "30";
+            const rand = Math.random().toString(36).substr(2, 8).toUpperCase();
+            const newKey = `PANTHER-${rand}-${daysVal}D`;
+            
+            document.getElementById('key_output').value = newKey;
+            
+            let keys = JSON.parse(localStorage.getItem('panther_keys')) || [];
+            keys.push({ key: newKey, days: daysVal, status: 'UNUSED' });
+            localStorage.setItem('panther_keys', JSON.stringify(keys));
+            
+            renderKeys();
+        }
+
+        function deleteKey(idx) {
+            if(!confirm("Bu keyi iptal etmek istediğine emin misin?")) return;
+            let keys = JSON.parse(localStorage.getItem('panther_keys')) || [];
+            keys.splice(idx, 1);
+            localStorage.setItem('panther_keys', JSON.stringify(keys));
+            renderKeys();
+        }
+
+        function sendBroadcast() {
+            const t = document.getElementById('ann_title').value;
+            const b = document.getElementById('ann_body').value;
+            if(!t || !b) return alert("Eksik bilgi!");
+            
+            localStorage.setItem('panther_announcement', JSON.stringify({ title: t, body: b }));
+            alert("Broadcast Deployed!");
+            document.getElementById('ann_title').value = "";
+            document.getElementById('ann_body').value = "";
+        }
+
+        function clearAllData() {
+            if(confirm("TÜM KEYLER VE VERİLER SİLİNECEK! EMİN MİSİN?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // Başlangıç tetikleyicisi
+        window.onload = () => {
+            if (sessionStorage.getItem('panther_admin_session') === 'true') renderKeys();
+        };
     </script>
 </body>
 </html>

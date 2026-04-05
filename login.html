@@ -31,6 +31,7 @@
             border-color: #10b981 !important;
             box-shadow: 0 0 30px rgba(16, 185, 129, 0.1);
             transform: scale(1.02);
+            outline: none;
         }
 
         /* Yükleme barı animasyonu */
@@ -59,49 +60,126 @@
             <div class="relative group">
                 <label class="text-[9px] font-black uppercase text-gray-600 tracking-widest ml-4 mb-2 block">License Key</label>
                 <input type="text" id="license_input" placeholder="PANTHER-XXXX-XXXX" 
-                       class="input-cyber w-full p-5 rounded-2xl text-center font-mono tracking-[0.2em] text-sm uppercase outline-none">
+                       class="input-cyber w-full p-5 rounded-2xl text-center font-mono tracking-[0.2em] text-sm uppercase">
             </div>
 
-            <button onclick="handleLogin()" 
-                    class="group relative w-full py-5 bg-[#10b981] text-black font-black italic rounded-2xl uppercase tracking-widest overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-[0_20px_40px_-10px rgba(16,185,129,0.3)]">
-                <span class="relative z-10">Initialize Protocol</span>
+            <button id="login_btn" onclick="handleLogin()" 
+                    class="group relative w-full py-5 bg-[#10b981] text-black font-black italic rounded-2xl uppercase tracking-widest overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-[0_20px_40px_-10px_rgba(16,185,129,0.3)]">
+                <span class="relative z-10" id="btn_text">Initialize Protocol</span>
                 <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
             </button>
+            
+            <p id="error_msg" class="text-red-500 text-[10px] font-black text-center mt-2 uppercase tracking-widest opacity-0 transition-opacity duration-300">Invalid Protocol</p>
         </div>
 
-        <div class="mt-10 pt-8 border-t border-white/5 text-center">
+        <div class="mt-8 pt-8 border-t border-white/5 text-center">
             <p class="text-[10px] text-gray-600 font-bold uppercase tracking-widest">
-                Don't have access? <a href="https://discord.gg/yourlink" class="text-white hover:text-[#10b981] transition">Contact Command</a>
+                Don't have access? <a href="https://discord.gg/EPYYyc7Qp" class="text-white hover:text-[#10b981] transition">Contact Command</a>
             </p>
             <a href="index.html" class="inline-block mt-4 text-[9px] text-gray-700 hover:text-white transition uppercase font-black tracking-[0.2em]">← Abort Sequence</a>
         </div>
     </div>
 
     <script>
+        // Enter tuşu ile giriş yapabilme desteği
+        document.getElementById('license_input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+
         async function handleLogin() {
-            const btn = document.querySelector('button');
-            const key = document.getElementById('license_input').value.trim();
+            const btn = document.getElementById('login_btn');
+            const btnText = document.getElementById('btn_text');
+            const errorMsg = document.getElementById('error_msg');
+            const keyInput = document.getElementById('license_input');
+            const key = keyInput.value.trim();
 
             if(!key) {
-                alert("LİSANS GİR AMK!");
+                showError("LİSANS ANAHTARI GİRİNİZ!");
                 return;
             }
 
-            // Görsel efekt: Buton yükleniyor modu
-            btn.innerText = "VERIFYING...";
+            // Animasyon: Doğrulanıyor...
+            btnText.innerText = "VERIFYING...";
             btn.style.opacity = "0.7";
+            btn.style.pointerEvents = "none"; // Spam tıklamayı engelle
 
-            // GITHUB VEYA TEST KONTROLÜ
             setTimeout(() => {
-                if(key === "PANTHER-PRO-2026") {
-                    // Giriş başarılıysa Dashboard'a fırlatıyoruz
-                    window.location.href = "dashboard.html";
+                // 1. MASTER ADMİN GİRİŞİ (admin, ADMIN, Admin fark etmez)
+                if(key.toUpperCase() === "ADMIN") {
+                    window.location.href = "admin.html";
+                    return;
+                }
+
+                // 2. KULLANICI LİSANS KONTROLÜ
+                let savedKeys = JSON.parse(localStorage.getItem('panther_keys')) || [];
+                const keyIndex = savedKeys.findIndex(k => k.key === key);
+
+                if(keyIndex !== -1) {
+                    let foundKey = savedKeys[keyIndex];
+                    let currentTime = new Date().getTime(); // Şu anki zamanı milisaniye olarak alıyoruz
+
+                    // DURUM 1: KEY İLK KEZ KULLANILIYORSA
+                    if (foundKey.status === 'UNUSED') {
+                        foundKey.status = 'ACTIVE';
+                        
+                        // Süreyi başlat (Gün sayısını milisaniyeye çevirip şu anki zamana ekler)
+                        let daysInMs = parseInt(foundKey.days) * 24 * 60 * 60 * 1000;
+                        foundKey.expireDate = currentTime + daysInMs;
+                        
+                        // Güncellenmiş keyi veritabanına (localStorage) kaydet
+                        savedKeys[keyIndex] = foundKey;
+                        localStorage.setItem('panther_keys', JSON.stringify(savedKeys));
+                        
+                        // Giriş yapan aktif kullanıcıyı kaydet ki dashboard'da süresini gösterebilelim
+                        localStorage.setItem('current_user', JSON.stringify(foundKey));
+                        window.location.href = "dashboard.html";
+                    } 
+                    // DURUM 2: KEY ZATEN AKTİFSE (SÜRESİ BİTMİŞ Mİ KONTROL ET)
+                    else if (foundKey.status === 'ACTIVE') {
+                        if (currentTime > foundKey.expireDate) {
+                            // Süre bitmişse keyi patlat
+                            foundKey.status = 'EXPIRED';
+                            savedKeys[keyIndex] = foundKey;
+                            localStorage.setItem('panther_keys', JSON.stringify(savedKeys));
+                            
+                            showError("LİSANS SÜRESİ DOLMUŞTUR!");
+                        } else {
+                            // Süre varsa giriş yap
+                            localStorage.setItem('current_user', JSON.stringify(foundKey));
+                            window.location.href = "dashboard.html";
+                        }
+                    } 
+                    // DURUM 3: KEY ÖNCEDEN PATLAMIŞSA
+                    else if (foundKey.status === 'EXPIRED') {
+                        showError("BU LİSANSIN SÜRESİ BİTMİŞ!");
+                    } else {
+                        showError("LİSANS GEÇERSİZ VEYA ASKIYA ALINMIŞ!");
+                    }
+
                 } else {
-                    alert("GEÇERSİZ PROTOKOL ANAHTARI!");
-                    btn.innerText = "INITIALIZE PROTOCOL";
-                    btn.style.opacity = "1";
+                    // Sistemde böyle bir key yoksa
+                    showError("GEÇERSİZ PROTOKOL ANAHTARI!");
                 }
             }, 1500);
+
+            // Hata Mesajı Gösterme Fonksiyonu (Eski çirkin alert yerine)
+            function showError(msg) {
+                errorMsg.innerText = msg;
+                errorMsg.style.opacity = "1";
+                keyInput.value = ""; // Inputu temizle
+                
+                // Butonu eski haline getir
+                btnText.innerText = "INITIALIZE PROTOCOL";
+                btn.style.opacity = "1";
+                btn.style.pointerEvents = "auto";
+
+                // 3 saniye sonra hata mesajını gizle
+                setTimeout(() => {
+                    errorMsg.style.opacity = "0";
+                }, 3000);
+            }
         }
     </script>
 </body>
