@@ -9,17 +9,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         body { background: #050505; color: white; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
         
-        #admin_login_overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center;
-        }
-        .login-box {
-            background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(25px);
-            border: 1px solid rgba(220, 38, 38, 0.3); padding: 3rem; border-radius: 2rem;
-            text-align: center; width: 90%; max-width: 400px;
-            box-shadow: 0 0 50px rgba(220, 38, 38, 0.1);
-        }
-
         .admin-glass {
             background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.03); transition: 0.3s;
@@ -30,6 +19,7 @@
             background: #dc2626; color: white; font-weight: 900; font-style: italic;
             text-transform: uppercase; transition: all 0.3s;
             box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
+            cursor: pointer;
         }
         .btn-red:hover { background: #ff0000; transform: translateY(-2px); box-shadow: 0 0 30px rgba(220, 38, 38, 0.4); }
 
@@ -42,29 +32,12 @@
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #dc2626; box-shadow: 0 0 10px #dc2626; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
     </style>
 </head>
-<body class="p-6 md:p-12 opacity-0 transition-opacity duration-1000" id="main_body">
-
-    <div id="admin_login_overlay">
-        <div class="login-box">
-            <div class="mb-6 inline-block p-4 rounded-2xl bg-red-600/5">
-                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                </svg>
-            </div>
-            <h2 class="text-2xl font-black italic uppercase text-red-600 mb-2 tracking-tighter">Master Access</h2>
-            <p class="text-[9px] text-gray-500 font-bold tracking-[0.3em] mb-8 uppercase">Root Authentication Required</p>
-            <input type="password" id="master_input" placeholder="PROTOCOL KEY" 
-                   class="w-full p-5 rounded-2xl text-center mb-6 border-red-600/20 font-mono tracking-[0.5em] text-sm">
-            <button onclick="verifyAdmin()" class="btn-red w-full py-5 rounded-2xl tracking-widest text-xs uppercase">Authorize Session</button>
-            <p id="error_msg" class="text-red-600 text-[10px] font-black mt-4 uppercase opacity-0 transition-opacity duration-300">Access Denied // Invalid Key</p>
-        </div>
-    </div>
+<body class="p-6 md:p-12">
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center md:items-end mb-16 border-b border-white/5 pb-10">
         <div class="text-center md:text-left">
@@ -82,7 +55,7 @@
 
     <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         
-        <div class="admin-glass p-8 rounded-[2.5rem] flex flex-col">
+        <div class="admin-glass p-8 rounded-[2.5rem] flex flex-col shadow-2xl">
             <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-8 italic">Key Generator</h3>
             <div class="space-y-5 flex-grow">
                 <div>
@@ -91,26 +64,23 @@
                 </div>
                 <div>
                     <label class="text-[8px] font-black text-gray-600 uppercase tracking-widest ml-2 mb-2 block">Generated Result</label>
-                    <div class="relative">
-                        <input type="text" id="key_output" readonly placeholder="Ready to Generate" 
-                               class="w-full p-5 rounded-2xl text-xs font-mono tracking-widest opacity-60 bg-black/40 cursor-pointer" 
-                               onclick="copyKey()">
-                    </div>
+                    <input type="text" id="key_output" readonly placeholder="Ready to Generate" 
+                           class="w-full p-5 rounded-2xl text-xs font-mono tracking-widest opacity-60 bg-black/40 cursor-pointer">
                 </div>
             </div>
-            <button onclick="generateKey()" class="btn-red w-full py-5 mt-8 rounded-2xl tracking-widest text-xs">Initialize New Key</button>
+            <button id="gen_btn" class="btn-red w-full py-5 mt-8 rounded-2xl tracking-widest text-xs">Initialize New Key</button>
         </div>
 
-        <div class="admin-glass p-8 rounded-[2.5rem]">
+        <div class="admin-glass p-8 rounded-[2.5rem] shadow-2xl">
             <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-8 italic">Global Broadcast</h3>
             <div class="space-y-5">
                 <input type="text" id="ann_title" placeholder="Protocol Title" class="w-full p-5 rounded-2xl text-sm font-bold">
                 <textarea id="ann_body" placeholder="System alert description..." class="w-full p-5 rounded-2xl text-sm h-32 resize-none font-bold"></textarea>
             </div>
-            <button onclick="sendBroadcast()" class="w-full py-5 mt-8 bg-white text-black font-black italic rounded-2xl uppercase tracking-widest text-xs hover:bg-red-600 hover:text-white transition-all">Push Global Alert</button>
+            <button id="broadcast_btn" class="w-full py-5 mt-8 bg-white text-black font-black italic rounded-2xl uppercase tracking-widest text-xs hover:bg-red-600 hover:text-white transition-all">Push Global Alert</button>
         </div>
 
-        <div class="admin-glass p-8 rounded-[2.5rem] flex flex-col">
+        <div class="admin-glass p-8 rounded-[2.5rem] flex flex-col shadow-2xl">
             <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-8 italic">System Telemetry</h3>
             <div class="space-y-6 mb-8">
                 <div class="flex justify-between items-center p-4 rounded-2xl bg-white/[0.02] border border-white/5">
@@ -129,10 +99,10 @@
     </div>
 
     <div class="max-w-7xl mx-auto">
-        <div class="admin-glass p-10 rounded-[3rem] overflow-hidden">
+        <div class="admin-glass p-10 rounded-[3rem] overflow-hidden shadow-2xl">
             <div class="flex justify-between items-center mb-10">
                 <h3 class="text-xs font-black uppercase tracking-[0.3em] text-gray-500 italic">Database Management</h3>
-                <button onclick="clearAllData()" class="text-[9px] text-red-600/40 font-black uppercase tracking-[0.2em] hover:text-red-600 transition">Purge All Data</button>
+                <button id="purge_btn" class="text-[9px] text-red-600/40 font-black uppercase tracking-[0.2em] hover:text-red-600 transition">Purge All Data</button>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
@@ -153,144 +123,107 @@
     <script type="module">
         import { db, ref, set, get, child, remove, onValue } from "./firebase-config.js";
 
-        const overlay = document.getElementById('admin_login_overlay');
-        const masterInput = document.getElementById('master_input');
-        const errorMsg = document.getElementById('error_msg');
-        const mainBody = document.getElementById('main_body');
-
-        // LOG SİSTEMİ
-        function addLog(msg) {
+        // Global Fonksiyonlar (HTML onclick'ler için window'a bağladık)
+        window.addLog = (msg) => {
             const container = document.getElementById('log_container');
             const time = new Date().toLocaleTimeString();
             const p = document.createElement('p');
             p.className = "text-[9px] font-mono text-red-600/60 mb-1 uppercase";
             p.innerHTML = `<span class="text-gray-700">[${time}]</span> > ${msg}`;
             container.prepend(p);
-        }
+        };
 
-        // 1. ADMIN GİRİŞ KONTROLÜ
-        function verifyAdmin() {
-            const pass = masterInput.value.trim().toUpperCase();
-            if (pass === "ADMIN") {
-                overlay.style.opacity = '0';
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                    mainBody.style.opacity = '1';
-                }, 500);
-                sessionStorage.setItem('panther_admin_session', 'true');
-                listenToFirebaseData();
-                addLog("Master access granted. Session started.");
-            } else {
-                errorMsg.style.opacity = '1';
-                masterInput.value = "";
-                setTimeout(() => { errorMsg.style.opacity = '0'; }, 2000);
-            }
-        }
-        window.verifyAdmin = verifyAdmin;
-
-        // Sayfa Kontrolü
-        if (sessionStorage.getItem('panther_admin_session') === 'true') {
-            overlay.style.display = 'none';
-            mainBody.style.opacity = '1';
-            listenToFirebaseData();
-        } else {
-            mainBody.classList.remove('opacity-0'); // Görünür yap ama overlay üstte kalsın
-        }
-
-        // 2. VERİ DİNLEME
-        function listenToFirebaseData() {
-            onValue(ref(db, 'keys'), (snapshot) => {
-                const tbody = document.getElementById('key_table_body');
-                const totalDisplay = document.getElementById('total_licenses');
-                const activeDisplay = document.getElementById('active_users_count');
+        // Otomatik Dinleme (Real-time Sync)
+        onValue(ref(db, 'keys'), (snapshot) => {
+            const tbody = document.getElementById('key_table_body');
+            const totalDisplay = document.getElementById('total_licenses');
+            const activeDisplay = document.getElementById('active_users_count');
+            
+            tbody.innerHTML = '';
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const keys = Object.keys(data);
+                totalDisplay.innerText = keys.length;
                 
-                tbody.innerHTML = '';
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    const keys = Object.keys(data);
-                    totalDisplay.innerText = keys.length;
-                    
-                    let active = 0;
-                    keys.forEach(keyID => {
-                        const k = data[keyID];
-                        if(k.status === 'ACTIVE') active++;
+                let active = 0;
+                keys.forEach(keyID => {
+                    const k = data[keyID];
+                    if(k.status === 'ACTIVE') active++;
 
-                        let statusColor = k.status === 'ACTIVE' ? 'text-green-500 bg-green-500/5' : 
-                                         (k.status === 'UNUSED' ? 'text-blue-500 bg-blue-500/5' : 'text-red-500 bg-red-500/5');
+                    let statusColor = k.status === 'ACTIVE' ? 'text-green-500 bg-green-500/5' : 
+                                     (k.status === 'UNUSED' ? 'text-blue-500 bg-blue-500/5' : 'text-red-500 bg-red-500/5');
 
-                        const tr = document.createElement('tr');
-                        tr.className = "border-b border-white/[0.02] hover:bg-white/[0.01] transition group";
-                        tr.innerHTML = `
-                            <td class="py-6 font-black text-white group-hover:text-red-600 transition">${keyID}</td>
-                            <td class="py-6 text-gray-500 italic">${k.days}D</td>
-                            <td class="py-6"><span class="px-3 py-1 rounded-lg font-black text-[9px] ${statusColor}">${k.status}</span></td>
-                            <td class="py-6 text-right">
-                                <button onclick="deleteKey('${keyID}')" class="text-gray-700 hover:text-red-600 font-black uppercase text-[9px] tracking-widest transition">Revoke Access</button>
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                    activeDisplay.innerText = active;
-                }
-            });
-        }
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-white/[0.02] hover:bg-white/[0.01] transition group";
+                    tr.innerHTML = `
+                        <td class="py-6 font-black text-white group-hover:text-red-600 transition">${keyID}</td>
+                        <td class="py-6 text-gray-500 italic">${k.days}D</td>
+                        <td class="py-6"><span class="px-3 py-1 rounded-lg font-black text-[9px] ${statusColor}">${k.status}</span></td>
+                        <td class="py-6 text-right">
+                            <button onclick="window.deleteKey('${keyID}')" class="text-gray-700 hover:text-red-600 font-black uppercase text-[9px] tracking-widest transition">Revoke Access</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                activeDisplay.innerText = active;
+            } else {
+                totalDisplay.innerText = "0";
+                activeDisplay.innerText = "0";
+            }
+        });
 
-        // 3. KEY GENERATOR
-        window.generateKey = async () => {
+        // Key Oluşturma
+        document.getElementById('gen_btn').onclick = async () => {
             const days = document.getElementById('key_days').value || 30;
             const rand = Math.random().toString(36).substr(2, 6).toUpperCase();
             const newKey = `PANTHER-${rand}-${days}D`;
             
             try {
                 await set(ref(db, 'keys/' + newKey), {
-                    days: days,
+                    days: parseInt(days),
                     status: 'UNUSED',
                     expireDate: 0
                 });
                 document.getElementById('key_output').value = newKey;
-                addLog(`Generated Key: ${newKey}`);
-            } catch (e) { alert("Error generating key."); }
+                window.addLog(`KEY DEPLOYED: ${newKey}`);
+            } catch (e) { alert("Firebase Write Error!"); }
         };
 
-        // KOPYALAMA
-        window.copyKey = () => {
-            const copyText = document.getElementById("key_output");
-            if(!copyText.value) return;
-            copyText.select();
-            document.execCommand("copy");
-            addLog("Key copied to clipboard.");
+        // Key Kopyalama
+        document.getElementById('key_output').onclick = function() {
+            if(!this.value) return;
+            navigator.clipboard.writeText(this.value);
+            window.addLog("KEY COPIED TO CLIPBOARD");
         };
 
-        // 4. BROADCAST
-        window.sendBroadcast = async () => {
+        // Duyuru Gönderme
+        document.getElementById('broadcast_btn').onclick = async () => {
             const t = document.getElementById('ann_title').value;
             const b = document.getElementById('ann_body').value;
             if(!t || !b) return;
-            
-            try {
-                await set(ref(db, 'announcement'), { title: t, body: b, time: new Date().getTime() });
-                addLog(`Global broadcast pushed: ${t}`);
-                document.getElementById('ann_title').value = "";
-                document.getElementById('ann_body').value = "";
-            } catch (e) { alert("Broadcast failed."); }
+            await set(ref(db, 'announcement'), { title: t, body: b, time: Date.now() });
+            window.addLog(`BROADCAST PUSHED: ${t}`);
+            document.getElementById('ann_title').value = "";
+            document.getElementById('ann_body').value = "";
         };
 
-        // 5. REVOKE & WIPE
+        // Tekli Silme
         window.deleteKey = async (id) => {
-            if(confirm(`Revoke key ${id}?`)) {
+            if(confirm(`REVOKE ACCESS FOR ${id}?`)) {
                 await remove(ref(db, 'keys/' + id));
-                addLog(`License revoked: ${id}`);
+                window.addLog(`REVOKED: ${id}`);
             }
         };
 
-        window.clearAllData = async () => {
+        // Full WIPE
+        document.getElementById('purge_btn').onclick = async () => {
             if(confirm("DANGER: WIPE ENTIRE DATABASE?")) {
                 await remove(ref(db, 'keys'));
-                addLog("DATABASE PURGED.");
+                window.addLog("DATABASE PURGED.");
             }
         };
 
-        masterInput.onkeydown = (e) => { if(e.key === 'Enter') verifyAdmin(); };
+        window.addLog("MASTER ROOT INITIALIZED.");
     </script>
 </body>
 </html>
