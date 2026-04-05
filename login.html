@@ -63,7 +63,7 @@
                        class="input-cyber w-full p-5 rounded-2xl text-center font-mono tracking-[0.2em] text-sm uppercase">
             </div>
 
-            <button id="login_btn" onclick="handleLogin()" 
+            <button id="login_btn" 
                     class="group relative w-full py-5 bg-[#10b981] text-black font-black italic rounded-2xl uppercase tracking-widest overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-[0_20px_40px_-10px_rgba(16,185,129,0.3)]">
                 <span class="relative z-10" id="btn_text">Initialize Protocol</span>
                 <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
@@ -80,19 +80,25 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { db, ref, set, get, child } from "./firebase-config.js";
+
+        const btn = document.getElementById('login_btn');
+        const btnText = document.getElementById('btn_text');
+        const errorMsg = document.getElementById('error_msg');
+        const keyInput = document.getElementById('license_input');
+
+        // Tıklama eventini JS içinden tanımlıyoruz
+        btn.addEventListener('click', handleLogin);
+
         // Enter tuşu ile giriş yapabilme desteği
-        document.getElementById('license_input').addEventListener('keypress', function (e) {
+        keyInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 handleLogin();
             }
         });
 
         async function handleLogin() {
-            const btn = document.getElementById('login_btn');
-            const btnText = document.getElementById('btn_text');
-            const errorMsg = document.getElementById('error_msg');
-            const keyInput = document.getElementById('license_input');
             const key = keyInput.value.trim();
 
             if(!key) {
@@ -100,86 +106,91 @@
                 return;
             }
 
+            // 1. MASTER ADMİN GİRİŞİ
+            if(key.toUpperCase() === "ADMIN") {
+                window.location.href = "admin.html";
+                return;
+            }
+
             // Animasyon: Doğrulanıyor...
             btnText.innerText = "VERIFYING...";
             btn.style.opacity = "0.7";
-            btn.style.pointerEvents = "none"; // Spam tıklamayı engelle
+            btn.style.pointerEvents = "none"; 
 
-            setTimeout(() => {
-                // 1. MASTER ADMİN GİRİŞİ (admin, ADMIN, Admin fark etmez)
-                if(key.toUpperCase() === "ADMIN") {
-                    window.location.href = "admin.html";
-                    return;
-                }
+            try {
+                const dbRef = ref(db);
+                // Firebase'de keys/KEY_ADI yoluna bakıyoruz
+                const snapshot = await get(child(dbRef, `keys/${key}`));
 
-                // 2. KULLANICI LİSANS KONTROLÜ
-                let savedKeys = JSON.parse(localStorage.getItem('panther_keys')) || [];
-                const keyIndex = savedKeys.findIndex(k => k.key === key);
+                setTimeout(async () => {
+                    if (snapshot.exists()) {
+                        let foundKey = snapshot.val();
+                        let currentTime = new Date().getTime();
 
-                if(keyIndex !== -1) {
-                    let foundKey = savedKeys[keyIndex];
-                    let currentTime = new Date().getTime(); // Şu anki zamanı milisaniye olarak alıyoruz
-
-                    // DURUM 1: KEY İLK KEZ KULLANILIYORSA
-                    if (foundKey.status === 'UNUSED') {
-                        foundKey.status = 'ACTIVE';
-                        
-                        // Süreyi başlat (Gün sayısını milisaniyeye çevirip şu anki zamana ekler)
-                        let daysInMs = parseInt(foundKey.days) * 24 * 60 * 60 * 1000;
-                        foundKey.expireDate = currentTime + daysInMs;
-                        
-                        // Güncellenmiş keyi veritabanına (localStorage) kaydet
-                        savedKeys[keyIndex] = foundKey;
-                        localStorage.setItem('panther_keys', JSON.stringify(savedKeys));
-                        
-                        // Giriş yapan aktif kullanıcıyı kaydet ki dashboard'da süresini gösterebilelim
-                        localStorage.setItem('current_user', JSON.stringify(foundKey));
-                        window.location.href = "dashboard.html";
-                    } 
-                    // DURUM 2: KEY ZATEN AKTİFSE (SÜRESİ BİTMİŞ Mİ KONTROL ET)
-                    else if (foundKey.status === 'ACTIVE') {
-                        if (currentTime > foundKey.expireDate) {
-                            // Süre bitmişse keyi patlat
-                            foundKey.status = 'EXPIRED';
-                            savedKeys[keyIndex] = foundKey;
-                            localStorage.setItem('panther_keys', JSON.stringify(savedKeys));
+                        // DURUM 1: KEY İLK KEZ KULLANILIYORSA
+                        if (foundKey.status === 'UNUSED') {
+                            foundKey.status = 'ACTIVE';
                             
-                            showError("LİSANS SÜRESİ DOLMUŞTUR!");
-                        } else {
-                            // Süre varsa giriş yap
+                            // Süreyi başlat (Gün sayısını milisaniyeye çevirip şu anki zamana ekler)
+                            let daysInMs = parseInt(foundKey.days) * 24 * 60 * 60 * 1000;
+                            foundKey.expireDate = currentTime + daysInMs;
+                            
+                            // Güncellenmiş veriyi buluta geri yükle
+                            await set(ref(db, 'keys/' + key), foundKey);
+                            
+                            // Dashboard'un yeni düzende tanıması için her iki veriyi de set ediyoruz
+                            localStorage.setItem('panther_active_key', key);
                             localStorage.setItem('current_user', JSON.stringify(foundKey));
                             window.location.href = "dashboard.html";
+                        } 
+                        // DURUM 2: KEY ZATEN AKTİFSE
+                        else if (foundKey.status === 'ACTIVE') {
+                            if (currentTime > foundKey.expireDate) {
+                                // Süre bitmişse bulutta güncelle
+                                foundKey.status = 'EXPIRED';
+                                await set(ref(db, 'keys/' + key), foundKey);
+                                showError("LİSANS SÜRESİ DOLMUŞTUR!");
+                            } else {
+                                // Süre hala varsa giriş yap
+                                localStorage.setItem('panther_active_key', key);
+                                localStorage.setItem('current_user', JSON.stringify(foundKey));
+                                window.location.href = "dashboard.html";
+                            }
+                        } 
+                        // DURUM 3: KEY ÖNCEDEN PATLAMIŞSA
+                        else if (foundKey.status === 'EXPIRED') {
+                            showError("BU LİSANSIN SÜRESİ BİTMİŞ!");
+                        } else {
+                            showError("LİSANS GEÇERSİZ VEYA ASKIYA ALINMIŞ!");
                         }
-                    } 
-                    // DURUM 3: KEY ÖNCEDEN PATLAMIŞSA
-                    else if (foundKey.status === 'EXPIRED') {
-                        showError("BU LİSANSIN SÜRESİ BİTMİŞ!");
+
                     } else {
-                        showError("LİSANS GEÇERSİZ VEYA ASKIYA ALINMIŞ!");
+                        // Sistemde böyle bir key yoksa
+                        showError("GEÇERSİZ PROTOKOL ANAHTARI!");
                     }
+                }, 1000); // 1 saniye tatlı bir bekleme efekti
 
-                } else {
-                    // Sistemde böyle bir key yoksa
-                    showError("GEÇERSİZ PROTOKOL ANAHTARI!");
-                }
-            }, 1500);
-
-            // Hata Mesajı Gösterme Fonksiyonu (Eski çirkin alert yerine)
-            function showError(msg) {
-                errorMsg.innerText = msg;
-                errorMsg.style.opacity = "1";
-                keyInput.value = ""; // Inputu temizle
-                
-                // Butonu eski haline getir
-                btnText.innerText = "INITIALIZE PROTOCOL";
-                btn.style.opacity = "1";
-                btn.style.pointerEvents = "auto";
-
-                // 3 saniye sonra hata mesajını gizle
-                setTimeout(() => {
-                    errorMsg.style.opacity = "0";
-                }, 3000);
+            } catch (error) {
+                console.error(error);
+                showError("SUNUCU BAĞLANTI HATASI!");
             }
+        }
+
+        // Hata Mesajı Gösterme Fonksiyonu (Dışarı çıkardık, kod daha okunaklı oldu)
+        function showError(msg) {
+            errorMsg.innerText = msg;
+            errorMsg.style.opacity = "1";
+            keyInput.value = ""; // Inputu temizle
+            
+            // Butonu eski haline getir
+            btnText.innerText = "INITIALIZE PROTOCOL";
+            btn.style.opacity = "1";
+            btn.style.pointerEvents = "auto";
+
+            // 3 saniye sonra hata mesajını gizle
+            setTimeout(() => {
+                errorMsg.style.opacity = "0";
+            }, 3000);
         }
     </script>
 </body>
