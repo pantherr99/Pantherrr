@@ -7,7 +7,8 @@ import {
     child, 
     remove, 
     onValue,
-    onDisconnect // <--- Bağlantı kopmasını takip etmek için eklendi
+    update, // <--- Eksik olan buydu, eklendi
+    onDisconnect 
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 const firebaseConfig = {
@@ -34,5 +35,6 @@ export {
     child, 
     remove, 
     onValue, 
+    update, // <--- Buraya da ekledik ki admin.html çekebilsin
     onDisconnect 
 };
