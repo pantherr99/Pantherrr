@@ -17,7 +17,6 @@
             overflow-x: hidden; 
         }
 
-        /* Cam Efekti ve Beyazlık Dokunuşu */
         .admin-glass {
             background: rgba(255, 255, 255, 0.03); 
             backdrop-filter: blur(20px);
@@ -26,16 +25,6 @@
             transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .admin-glass:hover { 
-            border-color: rgba(255, 255, 255, 0.15); 
-            box-shadow: 0 0 40px rgba(220, 38, 38, 0.05);
-        }
-
-        /* Yazı Parlamaları */
-        .glow-text {
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
-        }
-
         .btn-red {
             background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
             color: white; 
@@ -44,26 +33,12 @@
             text-transform: uppercase; 
             transition: all 0.3s;
             border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer;
         }
 
         .btn-red:hover { 
             transform: translateY(-3px) scale(1.02); 
             box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4); 
             filter: brightness(1.2);
-        }
-
-        input, textarea {
-            background: rgba(255, 255, 255, 0.02) !important; 
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            color: #ffffff !important; 
-            outline: none; 
-            transition: 0.3s;
-        }
-
-        input:focus { 
-            border-color: #dc2626 !important; 
-            box-shadow: 0 0 15px rgba(220, 38, 38, 0.2); 
         }
 
         .status-dot { 
@@ -75,104 +50,98 @@
 
         @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
         
-        .log-entry { animation: slideIn 0.3s ease-out forwards; border-left: 2px solid #dc2626; padding-left: 8px; margin-bottom: 8px; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .log-entry { border-left: 2px solid #dc2626; padding-left: 8px; margin-bottom: 8px; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #dc2626; }
+        input, textarea {
+            background: rgba(255, 255, 255, 0.02) !important; 
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important; 
+        }
     </style>
 </head>
 <body class="p-6 md:p-12">
     
-    <div class="fixed bottom-6 left-6 w-80 z-50 pointer-events-none">
-        <div class="admin-glass p-4 rounded-2xl border-red-600/20 shadow-2xl pointer-events-auto bg-black/60">
+    <div class="fixed bottom-6 left-6 w-80 z-50">
+        <div class="admin-glass p-4 rounded-2xl bg-black/60">
             <div class="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
-                <span class="text-[9px] font-black uppercase tracking-[0.3em] text-red-600">Live Traffic</span>
-                <div class="flex gap-1">
-                    <div class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></div>
-                </div>
+                <span class="text-[9px] font-black uppercase tracking-[0.3em] text-red-600">System Logs</span>
+                <div class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></div>
             </div>
-            <div id="terminal_logs" class="h-40 overflow-y-auto scrollbar-hide flex flex-col-reverse font-mono text-[10px]">
+            <div id="terminal_logs" class="h-40 overflow-y-auto font-mono text-[10px] flex flex-col-reverse">
                 <div class="text-gray-700 italic">>> SECURE LINE ESTABLISHED...</div>
             </div>
         </div>
     </div>
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-16">
-        <div class="text-center md:text-left">
-            <h1 class="text-6xl font-black italic uppercase tracking-tighter leading-none glow-text">
-                COMMAND <span class="text-red-600">CENTER</span>
+        <div>
+            <h1 class="text-6xl font-black italic uppercase tracking-tighter leading-none">
+                COMMAND <span class="text-red-600 text-shadow-lg">CENTER</span>
             </h1>
-            <p class="text-[10px] text-gray-500 font-bold tracking-[0.5em] mt-4 uppercase">Panther Security Systems v4.0 // Root Access</p>
+            <p class="text-[10px] text-gray-500 font-bold tracking-[0.5em] mt-4 uppercase">Root Authority // Panther Security</p>
         </div>
         <div class="flex items-center gap-8 mt-8 md:mt-0 bg-white/5 p-4 rounded-3xl border border-white/10">
-            <div class="text-right">
-                <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Network Status</p>
-                <p class="text-xs font-black text-red-600 uppercase italic">Encrypted Connection</p>
-            </div>
             <div class="status-dot"></div>
+            <p class="text-xs font-black text-red-600 uppercase italic">Active Connection</p>
         </div>
     </div>
 
     <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         <div class="admin-glass p-10 rounded-[2.5rem] flex flex-col">
-            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8 border-b border-white/5 pb-4 italic">Key Generator</h3>
+            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8 border-b border-white/5 pb-4">Key Generator</h3>
             <div class="space-y-6 flex-grow">
                 <div>
-                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1 mb-2 block">Validity Period</label>
-                    <input type="number" id="key_days" value="30" class="w-full p-5 rounded-2xl text-sm font-black">
+                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Days</label>
+                    <input type="number" id="key_days" value="30" class="w-full p-5 rounded-2xl text-sm font-black outline-none focus:border-red-600 transition">
                 </div>
                 <div>
-                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1 mb-2 block">Generated Result</label>
-                    <input type="text" id="key_output" readonly placeholder="AWAITING SIGNAL..." class="w-full p-5 rounded-2xl text-xs font-mono tracking-widest bg-black/40 text-red-500">
+                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Output</label>
+                    <input type="text" id="key_output" readonly placeholder="AWAITING..." class="w-full p-5 rounded-2xl text-xs font-mono tracking-widest bg-black/40 text-red-500 border-none">
                 </div>
             </div>
-            <button id="gen_btn" class="btn-red w-full py-6 mt-10 rounded-2xl tracking-widest text-xs">Initialize New Key</button>
+            <button id="gen_btn" class="btn-red w-full py-6 mt-10 rounded-2xl tracking-widest text-xs">Generate Protocol</button>
         </div>
 
         <div class="admin-glass p-10 rounded-[2.5rem]">
-            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8 border-b border-white/5 pb-4 italic">Global Broadcast</h3>
+            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8 border-b border-white/5 pb-4">Broadcast Alert</h3>
             <div class="space-y-5">
-                <input type="text" id="ann_title" placeholder="Protocol Title" class="w-full p-5 rounded-2xl text-sm font-black">
-                <textarea id="ann_body" placeholder="System alert description..." class="w-full p-5 rounded-2xl text-sm h-32 resize-none font-medium"></textarea>
+                <input type="text" id="ann_title" placeholder="Protocol Title" class="w-full p-5 rounded-2xl text-sm font-black outline-none">
+                <textarea id="ann_body" placeholder="System alert message..." class="w-full p-5 rounded-2xl text-sm h-32 resize-none font-medium outline-none"></textarea>
             </div>
-            <button id="broadcast_btn" class="w-full py-6 mt-8 bg-white text-black font-black italic rounded-2xl uppercase tracking-widest text-xs hover:bg-red-600 hover:text-white transition-all duration-500">Push Global Alert</button>
+            <button id="broadcast_btn" class="w-full py-6 mt-8 bg-white text-black font-black italic rounded-2xl uppercase tracking-widest text-xs hover:bg-red-600 hover:text-white transition-all duration-500">Push Alert</button>
         </div>
 
         <div class="admin-glass p-10 rounded-[2.5rem] flex flex-col">
-            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8 border-b border-white/5 pb-4 italic">Telemetry</h3>
+            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8 border-b border-white/5 pb-4">Telemetry</h3>
             <div class="grid grid-cols-2 gap-4 mb-8">
                 <div class="p-6 rounded-3xl bg-white/5 border border-white/5 text-center">
-                    <span class="text-[9px] uppercase font-bold text-gray-500 block mb-2">Total</span>
-                    <span id="total_licenses" class="text-3xl font-black italic text-white glow-text">0</span>
+                    <span id="total_licenses" class="text-3xl font-black italic text-white">0</span>
+                    <span class="text-[9px] uppercase font-bold text-gray-500 block mt-2">Total Keys</span>
                 </div>
                 <div class="p-6 rounded-3xl bg-white/5 border border-white/5 text-center">
-                    <span class="text-[9px] uppercase font-bold text-gray-500 block mb-2">Active</span>
                     <span id="active_users_count" class="text-3xl font-black italic text-green-500">0</span>
+                    <span class="text-[9px] uppercase font-bold text-gray-500 block mt-2">Active</span>
                 </div>
             </div>
-            <div class="flex-grow bg-black/40 rounded-3xl p-5 border border-white/5 overflow-y-auto max-h-[160px] font-mono text-[10px]" id="log_container">
-                <p class="text-gray-700">>> SYSTEM LOG INITIALIZED...</p>
-            </div>
+            <div class="flex-grow bg-black/40 rounded-3xl p-5 border border-white/5 overflow-y-auto max-h-[160px] font-mono text-[10px]" id="log_container"></div>
         </div>
     </div>
 
     <div class="max-w-7xl mx-auto">
         <div class="admin-glass rounded-[3rem] overflow-hidden">
-            <div class="p-10 flex justify-between items-center border-b border-white/5">
-                <h3 class="text-sm font-black uppercase tracking-[0.3em] text-white italic">Node Management</h3>
-                <button id="purge_btn" class="text-[10px] text-red-600/40 font-black uppercase tracking-widest hover:text-red-500 transition">Purge All Data</button>
+            <div class="p-10 border-b border-white/5 flex justify-between">
+                <h3 class="text-sm font-black uppercase tracking-[0.3em] italic">Active Protocols</h3>
             </div>
-            <div class="overflow-x-auto p-4">
+            <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
                         <tr class="text-[10px] uppercase text-gray-400 tracking-widest">
-                            <th class="p-6 font-black">License Key</th>
-                            <th class="p-6 font-black">Duration</th>
-                            <th class="p-6 font-black">Status</th>
-                            <th class="p-6 font-black">Hardware ID</th>
-                            <th class="p-6 font-black text-right">Operations</th>
+                            <th class="p-8">Key</th>
+                            <th class="p-8">Duration</th>
+                            <th class="p-8">Status</th>
+                            <th class="p-8">HWID</th>
+                            <th class="p-8 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="key_table_body" class="font-mono text-xs"></tbody>
@@ -182,31 +151,68 @@
     </div>
 
     <script type="module">
-        import { db, ref, set, get, child, remove, onValue, onDisconnect } from "./firebase-config.js";
+        import { db, ref, set, get, child, remove, onValue, update } from "./firebase-config.js";
 
-        // Terminal & Log Fonksiyonları
         const terminalLogs = document.getElementById('terminal_logs');
-        window.addTerminalLog = (msg, isSpecial = false) => {
-            const time = new Date().toLocaleTimeString('tr-TR', { hour12: false });
+        
+        // Loglama Sistemi
+        window.addTerminalLog = (msg, isError = false) => {
             const div = document.createElement('div');
             div.className = "log-entry";
-            const colorClass = isSpecial ? "text-red-500 font-black" : "text-gray-400";
-            div.innerHTML = `<span class="opacity-20">[${time}]</span> <span class="${colorClass}">${msg}</span>`;
+            const color = isError ? "text-red-500" : "text-gray-400";
+            div.innerHTML = `<span class="${color}">>> ${msg}</span>`;
             terminalLogs.prepend(div);
         };
 
-        window.addLog = (msg) => {
-            const container = document.getElementById('log_container');
-            const time = new Date().toLocaleTimeString();
-            const p = document.createElement('p');
-            p.className = "text-[9px] font-mono text-red-600/60 mb-1 uppercase";
-            p.innerHTML = `<span class="text-gray-700">[${time}]</span> > ${msg}`;
-            container.prepend(p);
+        // Key Oluşturma (Fixlendi)
+        document.getElementById('gen_btn').onclick = async () => {
+            try {
+                const days = document.getElementById('key_days').value || 30;
+                const rand = Math.random().toString(36).substr(2, 6).toUpperCase();
+                const newKey = `PANTHER-${rand}-${days}D`;
+                
+                // Firebase'e yazıyoruz
+                await set(ref(db, 'keys/' + newKey), {
+                    days: parseInt(days),
+                    status: 'UNUSED',
+                    isOnline: false,
+                    hwid: null,
+                    createdAt: Date.now()
+                });
+
+                document.getElementById('key_output').value = newKey;
+                window.addTerminalLog(`GENERATED: ${newKey}`);
+            } catch (err) {
+                console.error(err);
+                window.addTerminalLog(`HATA: ${err.message}`, true);
+            }
         };
 
-        let lastKeysState = {};
+        // HWID Reset (Kritik Fix)
+        window.resetHWID = async (id) => {
+            if(confirm(`${id} HWID Resetlensin mi?`)) {
+                try {
+                    await update(ref(db, `keys/${id}`), { hwid: null, status: 'UNUSED' });
+                    window.addTerminalLog(`HWID RESET: ${id}`);
+                } catch (err) {
+                    window.addTerminalLog(`HATA: Resetlenemedi!`, true);
+                }
+            }
+        };
 
-        // Veri Dinleme
+        // Key Silme
+        window.deleteKey = async (id) => {
+            if(confirm(`${id} silinsin mi?`)) {
+                try {
+                    await remove(ref(db, 'keys/' + id));
+                    window.addTerminalLog(`DELETED: ${id}`, true);
+                } catch (err) {
+                    window.addTerminalLog(`HATA: Silinemedi!`, true);
+                }
+            }
+        };
+
+        // Veri Dinleme ve Tablo Güncelleme
         onValue(ref(db, 'keys'), (snapshot) => {
             const tbody = document.getElementById('key_table_body');
             const totalDisplay = document.getElementById('total_licenses');
@@ -218,79 +224,45 @@
                 const keys = Object.keys(data);
                 totalDisplay.innerText = keys.length;
                 
-                let active = 0;
+                let activeCount = 0;
                 keys.forEach(keyID => {
                     const k = data[keyID];
-                    
-                    if (lastKeysState[keyID]) {
-                        if (k.activatedAt && k.activatedAt !== lastKeysState[keyID].activatedAt) {
-                            window.addTerminalLog(`LOGIN DETECTED: ${keyID}`, true);
-                        }
-                    }
+                    if(k.status === 'ACTIVE') activeCount++;
 
-                    if(k.status === 'ACTIVE') active++;
-
-                    let statusColor = k.status === 'ACTIVE' ? 'text-green-500 bg-green-500/5' : 
-                                     (k.status === 'UNUSED' ? 'text-blue-500 bg-blue-500/5' : 'text-red-500 bg-red-500/5');
-
-                    const onlineIndicator = k.isOnline 
-                        ? `<span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>` 
-                        : `<span class="flex h-2 w-2 mr-2 rounded-full bg-gray-800 border border-gray-600"></span>`;
+                    let statusStyle = k.status === 'ACTIVE' ? 'text-green-500 bg-green-500/5' : 
+                                    (k.status === 'UNUSED' ? 'text-blue-500 bg-blue-500/5' : 'text-red-500 bg-red-500/5');
 
                     const tr = document.createElement('tr');
-                    tr.className = "border-b border-white/[0.02] hover:bg-white/[0.01] transition group";
+                    tr.className = "border-b border-white/[0.02] hover:bg-white/[0.01] transition";
                     tr.innerHTML = `
-                        <td class="p-6 font-black text-white group-hover:text-red-600 transition flex items-center">
-                            ${onlineIndicator} ${keyID}
-                        </td>
-                        <td class="p-6 text-gray-500 italic">${k.days}D</td>
-                        <td class="p-6"><span class="px-3 py-1 rounded-lg font-black text-[9px] ${statusColor}">${k.status}</span></td>
-                        <td class="p-6 font-mono text-gray-500 text-[10px]">${k.hwid || 'NONE'}</td>
-                        <td class="p-6 text-right">
-                            ${k.hwid ? `<button onclick="resetHWID('${keyID}')" class="text-yellow-600/60 hover:text-yellow-500 font-black uppercase text-[9px] mr-4">Reset HWID</button>` : ''}
-                            <button onclick="deleteKey('${keyID}')" class="text-gray-700 hover:text-red-600 font-black uppercase text-[9px]">Revoke</button>
+                        <td class="p-8 text-white font-black">${keyID}</td>
+                        <td class="p-8 text-gray-500 italic">${k.days} Gün</td>
+                        <td class="p-8"><span class="px-3 py-1 rounded-lg text-[9px] font-black ${statusStyle}">${k.status}</span></td>
+                        <td class="p-8 text-gray-600 text-[10px]">${k.hwid ? k.hwid.substring(0, 15) + '...' : 'CLEAN'}</td>
+                        <td class="p-8 text-right space-x-4">
+                            <button onclick="resetHWID('${keyID}')" class="text-yellow-600 hover:text-yellow-400 text-[9px] font-black uppercase">HWID Reset</button>
+                            <button onclick="deleteKey('${keyID}')" class="text-red-800 hover:text-red-500 text-[9px] font-black uppercase">Revoke</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
-                lastKeysState = JSON.parse(JSON.stringify(data));
-                activeDisplay.innerText = active;
+                activeDisplay.innerText = activeCount;
+            } else {
+                totalDisplay.innerText = "0";
+                activeDisplay.innerText = "0";
             }
         });
 
-        // Event Dinleyicileri (Key Gen, Reset, Delete, Broadcast)
-        document.getElementById('gen_btn').onclick = async () => {
-            const days = document.getElementById('key_days').value || 30;
-            const rand = Math.random().toString(36).substr(2, 6).toUpperCase();
-            const newKey = `PANTHER-${rand}-${days}D`;
-            await set(ref(db, 'keys/' + newKey), { days: parseInt(days), status: 'UNUSED', isOnline: false });
-            document.getElementById('key_output').value = newKey;
-            window.addTerminalLog(`NEW PROTOCOL: ${rand}`);
-        };
-
-        window.resetHWID = async (id) => {
-            if(confirm(`RESET HWID: ${id}?`)) {
-                await set(ref(db, `keys/${id}/hwid`), null);
-                window.addTerminalLog(`HWID PURGED: ${id}`);
-            }
-        };
-
-        window.deleteKey = async (id) => {
-            if(confirm(`REVOKE ACCESS: ${id}?`)) {
-                await remove(ref(db, 'keys/' + id));
-                window.addTerminalLog(`ACCESS REVOKED: ${id}`, true);
-            }
-        };
-
+        // Global Alert
         document.getElementById('broadcast_btn').onclick = async () => {
             const t = document.getElementById('ann_title').value;
             const b = document.getElementById('ann_body').value;
             if(!t || !b) return;
             await set(ref(db, 'announcement'), { title: t, body: b, time: Date.now() });
-            window.addTerminalLog(`GLOBAL ALERT SENT: ${t}`);
+            window.addTerminalLog(`GLOBAL BROADCAST SENT`);
         };
 
-        window.addTerminalLog("MASTER ROOT INITIALIZED.");
+        window.addTerminalLog("PANTHER ROOT INITIALIZED.");
     </script>
 </body>
 </html>
