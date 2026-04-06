@@ -69,14 +69,26 @@
                 <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
             </button>
             
-            <p id="error_msg" class="text-red-500 text-[10px] font-black text-center mt-2 uppercase tracking-widest opacity-0 transition-opacity duration-300">Invalid Protocol</p>
+            <p id="error_msg" class="text-red-500 text-[10px] font-black text-center mt-2 uppercase tracking-widest opacity-0 transition-opacity duration-300 h-4">Invalid Protocol</p>
         </div>
 
-        <div class="mt-8 pt-8 border-t border-white/5 text-center">
-            <p class="text-[10px] text-gray-600 font-bold uppercase tracking-widest">
-                Don't have access? <a href="https://discord.gg/EPYYyc7Qp" class="text-white hover:text-[#10b981] transition">Contact Command</a>
-            </p>
-            <a href="index.html" class="inline-block mt-4 text-[9px] text-gray-700 hover:text-white transition uppercase font-black tracking-[0.2em]">← Abort Sequence</a>
+        <div class="mt-8 pt-6 border-t border-white/5 space-y-4">
+            <div class="text-[8px] text-gray-600 uppercase tracking-widest leading-relaxed text-center">
+                <span class="text-gray-400">Disclaimer:</span> Panther is a performance tool. Use at your own risk. 
+                We are not responsible for hardware issues or account bans.
+            </div>
+            
+            <div class="flex justify-center gap-4 text-[9px] font-bold uppercase tracking-widest text-gray-500">
+                <a href="#" class="hover:text-white transition">Terms</a>
+                <a href="#" class="hover:text-white transition">Privacy</a>
+            </div>
+
+            <div class="text-center pt-2">
+                <p class="text-[10px] text-gray-600 font-bold uppercase tracking-widest">
+                    No access? <a href="https://discord.gg/EPYYyc7Qp" target="_blank" class="text-white hover:text-[#10b981] transition">Contact Command</a>
+                </p>
+                <a href="index.html" class="inline-block mt-4 text-[9px] text-gray-700 hover:text-white transition uppercase font-black tracking-[0.2em]">← Abort Sequence</a>
+            </div>
         </div>
     </div>
 
@@ -91,11 +103,10 @@
         btn.addEventListener('click', handleLogin);
         keyInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
-        // GERÇEK HWID KİLİDİ (Benzersiz Cihaz Damgası)
+        // CIHAZ KİMLİĞİ (HWID SİMLÜASYONU)
         function generateHWID() {
             let deviceID = localStorage.getItem('panther_device_id');
             if (!deviceID) {
-                // Eğer cihazda damga yoksa, dünyada eşi benzeri olmayan bir ID oluştur ve o PC'ye kaydet.
                 deviceID = crypto.randomUUID(); 
                 localStorage.setItem('panther_device_id', deviceID);
             }
@@ -115,13 +126,13 @@
                 return;
             }
 
-            // Arayüz Kilitleme
+            // UI LOCK
             btnText.innerText = "VERIFYING...";
             btn.style.opacity = "0.7";
             btn.style.pointerEvents = "none"; 
 
             try {
-                const userHWID = generateHWID(); // Cihazın damgasını al
+                const userHWID = generateHWID(); 
                 const dbRef = ref(db);
                 const snapshot = await get(child(dbRef, `keys/${key}`));
 
@@ -129,14 +140,11 @@
                     let foundKey = snapshot.val();
                     let currentTime = new Date().getTime();
 
-                    // DURUM 1: UNUSED (Lisans İlk Kez Kullanılıyor)
+                    // DURUM 1: UNUSED - LİSANSI İLK KEZ BU PC'YE KİLİTLE
                     if (foundKey.status === 'UNUSED') {
                         foundKey.status = 'ACTIVE';
+                        foundKey.hwid = userHWID; // İlk giren PC'nin ID'sini Firebase'e yazıyoruz
                         foundKey.expireDate = currentTime + (parseInt(foundKey.days) * 86400000);
-                        
-                        // LİSANSI BU PC'YE KİLİTLE
-                        foundKey.hwid = userHWID; 
-                        
                         foundKey.isOnline = true;
                         foundKey.activatedAt = currentTime;
 
@@ -145,38 +153,40 @@
 
                         finalizeLogin(key, foundKey);
                     } 
-                    // DURUM 2: ACTIVE (Lisans Daha Önce Kullanılmış)
+                    
+                    // DURUM 2: ACTIVE - MEVCUT LİSANS KONTROLLERİ
                     else if (foundKey.status === 'ACTIVE') {
                         
-                        // ÖNCE HWID KONTROLÜ YAP (Farklı PC ise anında reddet)
+                        // 1. HWID KONTROLÜ (Kilidi kontrol et)
                         if (foundKey.hwid && foundKey.hwid !== userHWID) {
                             showError("BU LİSANS BAŞKA BİR CİHAZA KAYITLIDIR!");
                             resetUI();
-                            return; // İşlemi tamamen durdur
+                            return;
                         }
 
-                        // HWID eşleşiyorsa süreyi kontrol et
+                        // 2. SÜRE KONTROLÜ
                         if (currentTime > foundKey.expireDate) {
                             foundKey.status = 'EXPIRED';
                             foundKey.isOnline = false;
                             await set(ref(db, 'keys/' + key), foundKey);
                             showError("LİSANS SÜRESİ DOLMUŞTUR!");
                         } 
-                        // Aynı kişi başka sekmede zaten açıksa
+                        
+                        // 3. ONLINE KONTROLÜ (Aynı anda iki kişi girmesin)
                         else if (foundKey.isOnline === true) {
-                            showError("BU LİSANS ŞU AN KULLANIMDA!");
+                            showError("BU LİSANS ŞU AN BAŞKA BİR OTURUMDA AÇIK!");
                         } 
-                        // Kendi PC'si, süresi var ve online değilse içeri al
+                        
+                        // 4. HER ŞEY OK - GİRİŞ YAP
                         else {
                             foundKey.isOnline = true;
                             await set(ref(db, 'keys/' + key), foundKey);
                             onDisconnect(ref(db, `keys/${key}/isOnline`)).set(false);
-                            
                             finalizeLogin(key, foundKey);
                         }
                     } 
                     else {
-                        showError("LİSANS GEÇERSİZ!");
+                        showError("LİSANS GEÇERSİZ VEYA SÜRESİ BİTMİŞ!");
                     }
                 } else {
                     showError("GEÇERSİZ PROTOKOL ANAHTARI!");
