@@ -7,39 +7,86 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { background: #050505; color: white; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
-        .admin-glass {
-            background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.03); transition: 0.3s;
+        
+        body { 
+            background: radial-gradient(circle at top right, #0a0a0a 0%, #050505 100%); 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            min-height: 100vh; 
+            margin: 0; 
+            overflow-x: hidden; 
         }
-        .admin-glass:hover { border-color: rgba(220, 38, 38, 0.3); }
-        .btn-red {
-            background: #dc2626; color: white; font-weight: 900; font-style: italic;
-            text-transform: uppercase; transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.2); cursor: pointer;
-        }
-        .btn-red:hover { background: #ff0000; transform: translateY(-2px); box-shadow: 0 0 30px rgba(220, 38, 38, 0.4); }
-        input, textarea {
-            background: #0f0f0f !important; border: 1px solid #1f1f1f !important;
-            color: #ef4444 !important; outline: none; transition: 0.2s;
-        }
-        input:focus { border-color: #dc2626 !important; box-shadow: 0 0 10px rgba(220, 38, 38, 0.1); }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #dc2626; box-shadow: 0 0 10px #dc2626; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #050505; }
-        ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
 
-        /* Terminal Animasyonu */
+        /* Cam Efekti ve Beyazlık Dokunuşu */
+        .admin-glass {
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .admin-glass:hover { 
+            border-color: rgba(255, 255, 255, 0.15); 
+            box-shadow: 0 0 40px rgba(220, 38, 38, 0.05);
+        }
+
+        /* Yazı Parlamaları */
+        .glow-text {
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-red {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white; 
+            font-weight: 900; 
+            font-style: italic;
+            text-transform: uppercase; 
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+        }
+
+        .btn-red:hover { 
+            transform: translateY(-3px) scale(1.02); 
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4); 
+            filter: brightness(1.2);
+        }
+
+        input, textarea {
+            background: rgba(255, 255, 255, 0.02) !important; 
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important; 
+            outline: none; 
+            transition: 0.3s;
+        }
+
+        input:focus { 
+            border-color: #dc2626 !important; 
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.2); 
+        }
+
+        .status-dot { 
+            width: 10px; height: 10px; border-radius: 50%; 
+            background: #dc2626; 
+            box-shadow: 0 0 15px #dc2626; 
+            animation: pulse 2s infinite; 
+        }
+
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
+        
         .log-entry { animation: slideIn 0.3s ease-out forwards; border-left: 2px solid #dc2626; padding-left: 8px; margin-bottom: 8px; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #dc2626; }
     </style>
 </head>
-<body class="p-6 md:p-12" id="main_body">
+<body class="p-6 md:p-12">
     
     <div class="fixed bottom-6 left-6 w-80 z-50 pointer-events-none">
-        <div class="admin-glass p-4 rounded-2xl border-red-600/20 shadow-2xl pointer-events-auto">
+        <div class="admin-glass p-4 rounded-2xl border-red-600/20 shadow-2xl pointer-events-auto bg-black/60">
             <div class="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
                 <span class="text-[9px] font-black uppercase tracking-[0.3em] text-red-600">Live Traffic</span>
                 <div class="flex gap-1">
@@ -52,12 +99,14 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-12">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-16">
         <div class="text-center md:text-left">
-            <h1 class="text-5xl font-black italic uppercase tracking-tighter leading-none">Command <span class="text-red-600">Center</span></h1>
-            <p class="text-[10px] text-gray-600 font-bold tracking-[0.5em] mt-4 uppercase opacity-50">Panther Security Systems v4.0 // Root Access</p>
+            <h1 class="text-6xl font-black italic uppercase tracking-tighter leading-none glow-text">
+                COMMAND <span class="text-red-600">CENTER</span>
+            </h1>
+            <p class="text-[10px] text-gray-500 font-bold tracking-[0.5em] mt-4 uppercase">Panther Security Systems v4.0 // Root Access</p>
         </div>
-        <div class="flex items-center gap-6 mt-8 md:mt-0">
+        <div class="flex items-center gap-8 mt-8 md:mt-0 bg-white/5 p-4 rounded-3xl border border-white/10">
             <div class="text-right">
                 <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Network Status</p>
                 <p class="text-xs font-black text-red-600 uppercase italic">Encrypted Connection</p>
@@ -66,77 +115,76 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        <div class="admin-glass p-8 rounded-[2.5rem] flex flex-col shadow-2xl">
-            <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-8 italic">Key Generator</h3>
-            <div class="space-y-5 flex-grow">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <div class="admin-glass p-10 rounded-[2.5rem] flex flex-col">
+            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8 border-b border-white/5 pb-4 italic">Key Generator</h3>
+            <div class="space-y-6 flex-grow">
                 <div>
-                    <label class="text-[8px] font-black text-gray-600 uppercase tracking-widest ml-2 mb-2 block">Validity Period (Days)</label>
-                    <input type="number" id="key_days" value="30" class="w-full p-5 rounded-2xl text-sm font-bold">
+                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1 mb-2 block">Validity Period</label>
+                    <input type="number" id="key_days" value="30" class="w-full p-5 rounded-2xl text-sm font-black">
                 </div>
                 <div>
-                    <label class="text-[8px] font-black text-gray-600 uppercase tracking-widest ml-2 mb-2 block">Generated Result</label>
-                    <input type="text" id="key_output" readonly placeholder="Ready to Generate" class="w-full p-5 rounded-2xl text-xs font-mono tracking-widest opacity-60 bg-black/40 cursor-pointer">
+                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-1 mb-2 block">Generated Result</label>
+                    <input type="text" id="key_output" readonly placeholder="AWAITING SIGNAL..." class="w-full p-5 rounded-2xl text-xs font-mono tracking-widest bg-black/40 text-red-500">
                 </div>
             </div>
-            <button id="gen_btn" class="btn-red w-full py-5 mt-8 rounded-2xl tracking-widest text-xs">Initialize New Key</button>
+            <button id="gen_btn" class="btn-red w-full py-6 mt-10 rounded-2xl tracking-widest text-xs">Initialize New Key</button>
         </div>
 
-        <div class="admin-glass p-8 rounded-[2.5rem] shadow-2xl">
-            <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-8 italic">Global Broadcast</h3>
+        <div class="admin-glass p-10 rounded-[2.5rem]">
+            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8 border-b border-white/5 pb-4 italic">Global Broadcast</h3>
             <div class="space-y-5">
-                <input type="text" id="ann_title" placeholder="Protocol Title" class="w-full p-5 rounded-2xl text-sm font-bold">
-                <textarea id="ann_body" placeholder="System alert description..." class="w-full p-5 rounded-2xl text-sm h-32 resize-none font-bold"></textarea>
+                <input type="text" id="ann_title" placeholder="Protocol Title" class="w-full p-5 rounded-2xl text-sm font-black">
+                <textarea id="ann_body" placeholder="System alert description..." class="w-full p-5 rounded-2xl text-sm h-32 resize-none font-medium"></textarea>
             </div>
-            <button id="broadcast_btn" class="w-full py-5 mt-8 bg-white text-black font-black italic rounded-2xl uppercase tracking-widest text-xs hover:bg-red-600 hover:text-white transition-all">Push Global Alert</button>
+            <button id="broadcast_btn" class="w-full py-6 mt-8 bg-white text-black font-black italic rounded-2xl uppercase tracking-widest text-xs hover:bg-red-600 hover:text-white transition-all duration-500">Push Global Alert</button>
         </div>
 
-        <div class="admin-glass p-8 rounded-[2.5rem] flex flex-col shadow-2xl">
-            <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-8 italic">System Telemetry</h3>
-            <div class="space-y-6 mb-8">
-                <div class="flex justify-between items-center p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                    <span class="text-[10px] uppercase font-black text-gray-500 tracking-tighter">Total Licenses</span>
-                    <span id="total_licenses" class="text-xl font-black italic text-red-600">0</span>
+        <div class="admin-glass p-10 rounded-[2.5rem] flex flex-col">
+            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8 border-b border-white/5 pb-4 italic">Telemetry</h3>
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="p-6 rounded-3xl bg-white/5 border border-white/5 text-center">
+                    <span class="text-[9px] uppercase font-bold text-gray-500 block mb-2">Total</span>
+                    <span id="total_licenses" class="text-3xl font-black italic text-white glow-text">0</span>
                 </div>
-                <div class="flex justify-between items-center p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                    <span class="text-[10px] uppercase font-black text-gray-500 tracking-tighter">Active Nodes</span>
-                    <span id="active_users_count" class="text-xl font-black italic text-green-500">0</span>
+                <div class="p-6 rounded-3xl bg-white/5 border border-white/5 text-center">
+                    <span class="text-[9px] uppercase font-bold text-gray-500 block mb-2">Active</span>
+                    <span id="active_users_count" class="text-3xl font-black italic text-green-500">0</span>
                 </div>
             </div>
-            <div class="flex-grow bg-black/40 rounded-2xl p-4 border border-white/5 overflow-y-auto max-h-[160px]" id="log_container">
-                <p class="text-[9px] font-mono text-gray-600 uppercase mb-2">>> System Log Initialized...</p>
+            <div class="flex-grow bg-black/40 rounded-3xl p-5 border border-white/5 overflow-y-auto max-h-[160px] font-mono text-[10px]" id="log_container">
+                <p class="text-gray-700">>> SYSTEM LOG INITIALIZED...</p>
             </div>
         </div>
     </div>
 
     <div class="max-w-7xl mx-auto">
-        <div class="admin-glass p-10 rounded-[3rem] overflow-hidden shadow-2xl">
-            <div class="flex justify-between items-center mb-10">
-                <h3 class="text-xs font-black uppercase tracking-[0.3em] text-gray-500 italic">Database Management</h3>
-                <button id="purge_btn" class="text-[9px] text-red-600/40 font-black uppercase tracking-[0.2em] hover:text-red-600 transition">Purge All Data</button>
+        <div class="admin-glass rounded-[3rem] overflow-hidden">
+            <div class="p-10 flex justify-between items-center border-b border-white/5">
+                <h3 class="text-sm font-black uppercase tracking-[0.3em] text-white italic">Node Management</h3>
+                <button id="purge_btn" class="text-[10px] text-red-600/40 font-black uppercase tracking-widest hover:text-red-500 transition">Purge All Data</button>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
+            <div class="overflow-x-auto p-4">
+                <table class="w-full text-left">
                     <thead>
-                        <tr class="border-b border-white/5 text-[9px] uppercase text-gray-600 tracking-[0.2em]">
-                            <th class="pb-6 font-black">License Key</th>
-                            <th class="pb-6 font-black">Duration</th>
-                            <th class="pb-6 font-black">Status</th>
-                            <th class="pb-6 font-black">Hardware ID</th>
-                            <th class="pb-6 font-black text-right">Operations</th>
+                        <tr class="text-[10px] uppercase text-gray-400 tracking-widest">
+                            <th class="p-6 font-black">License Key</th>
+                            <th class="p-6 font-black">Duration</th>
+                            <th class="p-6 font-black">Status</th>
+                            <th class="p-6 font-black">Hardware ID</th>
+                            <th class="p-6 font-black text-right">Operations</th>
                         </tr>
                     </thead>
-                    <tbody id="key_table_body" class="font-mono text-[11px]"></tbody>
+                    <tbody id="key_table_body" class="font-mono text-xs"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <script type="module">
-        // onDisconnect listeye eklendi
         import { db, ref, set, get, child, remove, onValue, onDisconnect } from "./firebase-config.js";
 
-        // Terminal Log Basma Fonksiyonu
+        // Terminal & Log Fonksiyonları
         const terminalLogs = document.getElementById('terminal_logs');
         window.addTerminalLog = (msg, isSpecial = false) => {
             const time = new Date().toLocaleTimeString('tr-TR', { hour12: false });
@@ -147,10 +195,8 @@
             terminalLogs.prepend(div);
         };
 
-        // Telemetry Log
         window.addLog = (msg) => {
             const container = document.getElementById('log_container');
-            if(!container) return;
             const time = new Date().toLocaleTimeString();
             const p = document.createElement('p');
             p.className = "text-[9px] font-mono text-red-600/60 mb-1 uppercase";
@@ -160,6 +206,7 @@
 
         let lastKeysState = {};
 
+        // Veri Dinleme
         onValue(ref(db, 'keys'), (snapshot) => {
             const tbody = document.getElementById('key_table_body');
             const totalDisplay = document.getElementById('total_licenses');
@@ -175,13 +222,9 @@
                 keys.forEach(keyID => {
                     const k = data[keyID];
                     
-                    // LOGIN VE HWID LOG TAKİBİ
                     if (lastKeysState[keyID]) {
                         if (k.activatedAt && k.activatedAt !== lastKeysState[keyID].activatedAt) {
                             window.addTerminalLog(`LOGIN DETECTED: ${keyID}`, true);
-                        }
-                        if (lastKeysState[keyID].hwid && !k.hwid) {
-                            window.addTerminalLog(`HWID PURGED: ${keyID}`);
                         }
                     }
 
@@ -190,11 +233,6 @@
                     let statusColor = k.status === 'ACTIVE' ? 'text-green-500 bg-green-500/5' : 
                                      (k.status === 'UNUSED' ? 'text-blue-500 bg-blue-500/5' : 'text-red-500 bg-red-500/5');
 
-                    const hwidText = k.hwid ? k.hwid : '<span class="text-gray-700">NONE</span>';
-                    const resetHwidBtn = k.hwid ? `<button onclick="resetHWID('${keyID}')" class="text-yellow-600/60 hover:text-yellow-500 font-black uppercase text-[9px] tracking-widest transition mr-4">Reset HWID</button>` : '';
-
-                    // ONLINE DURUM GÖSTERGESİ
-                    // Eğer isOnline true ise yeşil animasyonlu nokta, değilse gri nokta
                     const onlineIndicator = k.isOnline 
                         ? `<span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>` 
                         : `<span class="flex h-2 w-2 mr-2 rounded-full bg-gray-800 border border-gray-600"></span>`;
@@ -202,94 +240,54 @@
                     const tr = document.createElement('tr');
                     tr.className = "border-b border-white/[0.02] hover:bg-white/[0.01] transition group";
                     tr.innerHTML = `
-                        <td class="py-6 font-black text-white group-hover:text-red-600 transition flex items-center">
+                        <td class="p-6 font-black text-white group-hover:text-red-600 transition flex items-center">
                             ${onlineIndicator} ${keyID}
                         </td>
-                        <td class="py-6 text-gray-500 italic">${k.days}D</td>
-                        <td class="py-6"><span class="px-3 py-1 rounded-lg font-black text-[9px] ${statusColor}">${k.status}</span></td>
-                        <td class="py-6 font-mono text-gray-500 text-[10px]">${hwidText}</td>
-                        <td class="py-6 text-right">
-                            ${resetHwidBtn}
-                            <button onclick="deleteKey('${keyID}')" class="text-gray-700 hover:text-red-600 font-black uppercase text-[9px] tracking-widest transition">Revoke Access</button>
+                        <td class="p-6 text-gray-500 italic">${k.days}D</td>
+                        <td class="p-6"><span class="px-3 py-1 rounded-lg font-black text-[9px] ${statusColor}">${k.status}</span></td>
+                        <td class="p-6 font-mono text-gray-500 text-[10px]">${k.hwid || 'NONE'}</td>
+                        <td class="p-6 text-right">
+                            ${k.hwid ? `<button onclick="resetHWID('${keyID}')" class="text-yellow-600/60 hover:text-yellow-500 font-black uppercase text-[9px] mr-4">Reset HWID</button>` : ''}
+                            <button onclick="deleteKey('${keyID}')" class="text-gray-700 hover:text-red-600 font-black uppercase text-[9px]">Revoke</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
-                
                 lastKeysState = JSON.parse(JSON.stringify(data));
                 activeDisplay.innerText = active;
-            } else {
-                totalDisplay.innerText = "0";
-                activeDisplay.innerText = "0";
-                lastKeysState = {};
             }
         });
 
-        // Key Oluşturma
+        // Event Dinleyicileri (Key Gen, Reset, Delete, Broadcast)
         document.getElementById('gen_btn').onclick = async () => {
-            const daysInput = document.getElementById('key_days');
-            const days = daysInput ? daysInput.value : 30;
+            const days = document.getElementById('key_days').value || 30;
             const rand = Math.random().toString(36).substr(2, 6).toUpperCase();
             const newKey = `PANTHER-${rand}-${days}D`;
-            
-            try {
-                await set(ref(db, 'keys/' + newKey), {
-                    days: parseInt(days),
-                    status: 'UNUSED',
-                    expireDate: 0,
-                    isOnline: false // Yeni anahtar offline başlar
-                });
-                document.getElementById('key_output').value = newKey;
-                window.addLog(`KEY DEPLOYED: ${newKey}`);
-                window.addTerminalLog(`NEW PROTOCOL DEPLOYED: ${rand}`);
-            } catch (e) { 
-                window.addTerminalLog("CRITICAL ERROR: DATABASE REJECTED WRITE");
-            }
+            await set(ref(db, 'keys/' + newKey), { days: parseInt(days), status: 'UNUSED', isOnline: false });
+            document.getElementById('key_output').value = newKey;
+            window.addTerminalLog(`NEW PROTOCOL: ${rand}`);
         };
 
-        // HWID Sıfırlama
         window.resetHWID = async (id) => {
-            if(confirm(`RESET HWID FOR ${id}?`)) {
-                const dbRef = ref(db, 'keys/' + id);
-                const snapshot = await get(dbRef);
-                if(snapshot.exists()){
-                    let val = snapshot.val();
-                    delete val.hwid;
-                    await set(dbRef, val);
-                    window.addLog(`HWID RESET: ${id}`);
-                    window.addTerminalLog(`HWID PURGED: ${id}`);
-                }
+            if(confirm(`RESET HWID: ${id}?`)) {
+                await set(ref(db, `keys/${id}/hwid`), null);
+                window.addTerminalLog(`HWID PURGED: ${id}`);
             }
         };
 
-        // Key Silme
         window.deleteKey = async (id) => {
-            if(confirm(`REVOKE ACCESS FOR ${id}?`)) {
+            if(confirm(`REVOKE ACCESS: ${id}?`)) {
                 await remove(ref(db, 'keys/' + id));
-                window.addLog(`REVOKED: ${id}`);
                 window.addTerminalLog(`ACCESS REVOKED: ${id}`, true);
             }
         };
 
-        // Duyuru Pushlama
         document.getElementById('broadcast_btn').onclick = async () => {
             const t = document.getElementById('ann_title').value;
             const b = document.getElementById('ann_body').value;
             if(!t || !b) return;
             await set(ref(db, 'announcement'), { title: t, body: b, time: Date.now() });
-            window.addLog(`BROADCAST PUSHED: ${t}`);
             window.addTerminalLog(`GLOBAL ALERT SENT: ${t}`);
-            document.getElementById('ann_title').value = "";
-            document.getElementById('ann_body').value = "";
-        };
-
-        // Veritabanı Temizleme
-        document.getElementById('purge_btn').onclick = async () => {
-            if(confirm("DANGER: WIPE ENTIRE DATABASE?")) {
-                await remove(ref(db, 'keys'));
-                window.addLog("DATABASE PURGED.");
-                window.addTerminalLog("SYSTEM WIPE COMPLETE.", true);
-            }
         };
 
         window.addTerminalLog("MASTER ROOT INITIALIZED.");
