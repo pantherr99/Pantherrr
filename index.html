@@ -24,17 +24,6 @@
 
         .glass { background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); }
 
-        /* CYBER CARD STYLING */
-        .cyber-card {
-            position: relative; overflow: hidden;
-            background: linear-gradient(145deg, #050505, #0a0a0a);
-            border: 1px solid rgba(255,255,255,0.03);
-            transition: all 0.4s ease;
-        }
-        .cyber-card:hover { border-color: rgba(16, 185, 129, 0.4); transform: translateY(-5px); }
-        .cyber-card img { height: 40px; filter: grayscale(100%) brightness(0.6); transition: 0.4s; }
-        .cyber-card:hover img { filter: grayscale(0%) brightness(1.2); }
-        
         /* THE LASER EFFECT */
         .laser {
             position: absolute; top: 0; left: 0; width: 100%; height: 1px;
@@ -43,13 +32,44 @@
         }
         @keyframes laserScan { 0% { top: 0%; } 100% { top: 100%; } }
 
-        /* Hile Menüsü Overlay */
+        /* --- HİLE MENÜSÜ OVERLAY & TASARIM --- */
         #cheat-overlay {
             display: none;
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 9999;
-            backdrop-filter: blur(20px); justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.85); z-index: 9999;
+            backdrop-filter: blur(15px); justify-content: center; align-items: center;
         }
+
+        .imgui-window {
+            width: 980px; height: 620px;
+            background: rgba(10, 10, 10, 0.98);
+            border: 1px solid rgba(185, 147, 255, 0.12);
+            border-radius: 20px; display: flex; position: relative;
+            box-shadow: 0 0 50px rgba(185, 147, 255, 0.05);
+            animation: menuZoom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes menuZoom { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        /* Sidebar & Items */
+        .sidebar { width: 85px; background: rgba(8, 8, 8, 0.5); border-right: 1px solid rgba(255, 255, 255, 0.03); display: flex; flex-direction: column; align-items: center; padding: 30px 0; border-radius: 20px 0 0 20px; }
+        .nav-item { width: 48px; height: 48px; margin-bottom: 22px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; transition: 0.3s; color: #333; }
+        .nav-item.active { color: #b993ff; background: rgba(185, 147, 255, 0.08); box-shadow: 0 0 15px rgba(185, 147, 255, 0.1); }
+
+        /* Main Menu Grid */
+        .menu-grid { flex: 1; display: grid; grid-template-columns: 270px 1fr 270px; padding: 30px; gap: 25px; }
+        .settings-panel { background: rgba(15, 15, 15, 0.4); border: 1px solid rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* GUI Elements */
+        .gui-switch { position: relative; width: 34px; height: 18px; }
+        .gui-switch input { opacity: 0; width: 0; height: 0; }
+        .slider-dot { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1a1a1a; transition: .3s; border-radius: 20px; }
+        .slider-dot:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: #444; transition: .3s; border-radius: 50%; }
+        input:checked + .slider-dot { background-color: rgba(185, 147, 255, 0.15); }
+        input:checked + .slider-dot:before { transform: translateX(16px); background-color: #b993ff; }
+
+        .esp-corner { position: absolute; width: 40px; height: 40px; border: 2px solid #00bfff; transition: 0.3s; }
+        .top-left { top: 15%; left: 20%; border-right: 0; border-bottom: 0; }
+        .top-right { top: 15%; right: 20%; border-left: 0; border-bottom: 0; }
     </style>
 </head>
 <body>
@@ -57,118 +77,69 @@
     <nav class="fixed w-full z-[100] glass border-b border-white/5 h-20 flex items-center justify-between px-10">
         <div class="text-2xl font-black italic uppercase tracking-tighter">Panther</div>
         <div class="hidden md:flex space-x-12 text-[9px] font-bold uppercase tracking-[0.4em] text-gray-500">
-            <a href="#home" class="hover:text-white transition translatable" data-en="Home" data-tr="Ana Sayfa">Home</a>
-            <a href="#protocol" class="hover:text-white transition translatable" data-en="Protocol" data-tr="Protokol">Protocol</a>
-            <a href="#intelligence" class="hover:text-white transition translatable" data-en="Intelligence" data-tr="İstihbarat">Intelligence</a>
-            <a href="#features" class="hover:text-white transition translatable" data-en="Features" data-tr="Özellikler">Features</a>
-            <a href="#security" class="hover:text-white transition translatable" data-en="Security" data-tr="Güvenlik">Security</a>
-            <a href="#store" class="hover:text-white transition translatable" data-en="Store" data-tr="Mağaza">Store</a>
+            <a href="#home" class="hover:text-white translatable" data-en="Home" data-tr="Ana Sayfa">Home</a>
+            <a href="#protocol" class="hover:text-white translatable" data-en="Protocol" data-tr="Protokol">Protocol</a>
+            <a href="#store" class="hover:text-white translatable" data-en="Store" data-tr="Mağaza">Store</a>
         </div>
         <div class="flex space-x-4 items-center">
-            <button onclick="toggleLang()" id="lang-btn" class="text-[9px] font-black text-gray-500 hover:text-white uppercase tracking-widest transition">EN / TR</button>
-            <button onclick="document.getElementById('cheat-overlay').style.display='flex'" class="bg-white text-black px-8 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition hover:bg-gray-200 translatable" data-en="LOGIN" data-tr="GİRİŞ">LOGIN</button>
+            <button onclick="toggleLang()" id="lang-btn" class="text-[9px] font-black text-gray-500 hover:text-white uppercase">EN / TR</button>
+            <button onclick="openMenu()" class="bg-white text-black px-8 py-2 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-gray-200 translatable" data-en="LOGIN" data-tr="GİRİŞ">LOGIN</button>
         </div>
     </nav>
 
     <section id="home" class="min-h-screen flex flex-col justify-center items-center pt-20">
         <div class="viewport"><img src="panther.png" id="panther-logo" alt="Panther Logo"></div>
-        <div class="text-center -mt-10">
-            <div class="flex justify-center items-center space-x-2 mb-4">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span class="text-[9px] font-black text-green-500 tracking-[0.4em] uppercase translatable" data-en="Encrypted Bypass Active" data-tr="Şifreli Bypass Aktif">Encrypted Bypass Active</span>
+        <h1 class="text-8xl font-black italic uppercase tracking-tighter">Panther</h1>
+        <p class="text-gray-600 text-[10px] tracking-[0.8em] font-bold uppercase mb-10 translatable" data-en="Become a Ghost in the Machine" data-tr="Makinedeki Hayalete Dönüş">Become a Ghost in the Machine</p>
+    </section>
+
+    <div id="cheat-overlay" onclick="if(event.target == this) closeMenu()">
+        <div class="imgui-window" onclick="event.stopPropagation()">
+            <div class="sidebar">
+                <div class="mb-12"><img src="https://api.dicebear.com/7.x/shapes/svg?seed=Panther" class="w-10 h-10 rounded-xl"></div>
+                <div class="nav-item active"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M22 12h-4M6 12H2M12 6V2M12 22v-4"/></svg></div>
+                <div class="nav-item"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                <div class="mt-auto nav-item text-red-500" onclick="closeMenu()"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></div>
             </div>
-            <h1 class="text-7xl md:text-8xl font-black italic uppercase tracking-tighter drop-shadow-2xl">Panther</h1>
-            <p class="text-gray-600 text-[10px] tracking-[0.8em] font-bold uppercase mb-10 translatable" data-en="Become a Ghost in the Machine" data-tr="Makinedeki Hayalete Dönüş">Become a Ghost in the Machine</p>
-            <a href="#store" class="px-12 py-5 bg-white text-black rounded-2xl font-black italic text-[10px] tracking-widest hover:scale-105 transition uppercase translatable" data-en="Access Operations" data-tr="Operasyonlara Eriş">Access Operations</a>
-        </div>
-    </section>
 
-    <section id="protocol" class="py-32 px-10 bg-[#020202]">
-        <div class="max-w-4xl mx-auto border-l border-[#10b981] pl-10 relative">
-            <div class="absolute w-2 h-2 bg-[#10b981] rounded-full -left-[4px] top-0 shadow-[0_0_15px_#10b981]"></div>
-            <h2 class="text-4xl font-black italic uppercase mb-6 text-white tracking-tighter translatable" data-en="The Panther Protocol" data-tr="Panther Protokolü">The Panther Protocol</h2>
-            <p class="text-gray-400 text-sm leading-loose font-medium mb-6 translatable" 
-               data-en="Operating strictly in the shadows, Panther utilizes state-of-the-art polymorphic engine technology and Ring-0 kernel execution. We don't just bypass modern anti-cheats; we exist entirely outside their jurisdiction. Every byte of our code is dynamically encrypted in your RAM, leaving zero residual strings, zero signature trails, and absolutely no digital footprint." 
-               data-tr="Sadece gölgelerde faaliyet gösteren Panther, son teknoloji polimorfik motor teknolojisi ve Ring-0 çekirdek seviyesi yürütme kullanır. Modern anti-hile sistemlerini sadece atlamıyoruz; onların yetki alanının tamamen dışında var oluyoruz. Kodumuzun her baytı RAM'inizde dinamik olarak şifrelenir; geriye sıfır kalıntı dizesi, sıfır imza izi ve kesinlikle dijital bir ayak izi bırakmaz.">
-               Operating strictly in the shadows, Panther utilizes state-of-the-art polymorphic engine technology and Ring-0 kernel execution. We don't just bypass modern anti-cheats; we exist entirely outside their jurisdiction. Every byte of our code is dynamically encrypted in your RAM, leaving zero residual strings, zero signature trails, and absolutely no digital footprint.
-            </p>
-            <p class="text-gray-500 text-sm leading-loose font-medium translatable" 
-               data-en="When you inject Panther into your system, you stop being a regular player. You become an invisible anomaly. Our proprietary stream-proof overlay manipulates the game engine at its core without triggering integrity checks. You see everything. They see nothing." 
-               data-tr="Panther'i sisteminize inject ettiğinizde, sıradan bir oyuncu olmayı bırakırsınız. Görünmez bir anomaliye dönüşürsünüz. Bize özel yayın-gizli (stream-proof) arayüzümüz, oyun motorunu bütünlük kontrollerini tetiklemeden çekirdeğinden manipüle eder. Siz her şeyi görürsünüz. Onlar hiçbir şey göremez.">
-               When you inject Panther into your system, you stop being a regular player. You become an invisible anomaly. Our proprietary stream-proof overlay manipulates the game engine at its core without triggering integrity checks. You see everything. They see nothing.
-            </p>
-        </div>
-    </section>
-
-    <section id="intelligence" class="py-32 px-10 border-t border-white/5 bg-[#010101]">
-        <div class="max-w-5xl mx-auto">
-            <div class="grid md:grid-cols-2 gap-16">
-                <div class="space-y-6">
-                    <h2 class="text-3xl font-black italic uppercase tracking-tighter border-b border-[#10b981]/20 pb-4 text-white translatable" data-en="Absolute Undetected & Manual Control Immunity" data-tr="Mutlak Gizlilik ve Manuel Kontrol Dokunulmazlığı">Absolute Undetected & Manual Control Immunity</h2>
-                    <p class="text-gray-400 text-sm leading-[2em] font-medium text-justify translatable" 
-                       data-en="Panther is engineered entirely from the ground up... (Metnin devamı buraya gelecek, karakter sınırına takılmamak için kısalttım ama senin orijinalindeki her kelimeyi buraya koyabilirsin)" 
-                       data-tr="Panther, geleneksel anti-hile tespit yöntemlerinin sınırları dışında çalışacak şekilde tamamen sıfırdan tasarlanmıştır... (Senin o uzun TR metninin aynısı)">
-                       Panther is engineered entirely from the ground up to operate outside the boundaries of conventional anti-cheat detection methods.
-                    </p>
+            <div class="menu-grid">
+                <div class="settings-panel">
+                    <div class="text-[10px] font-black text-[#b993ff] tracking-widest uppercase mb-2">Combat Settings</div>
+                    <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg">
+                        <span class="text-[10px] font-bold">Master Aimbot</span>
+                        <label class="gui-switch"><input type="checkbox" checked><span class="slider-dot"></span></label>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[9px] text-gray-500 font-bold uppercase"><span>Smoothing</span><span>4.5</span></div>
+                        <input type="range" class="w-full accent-[#b993ff]" min="0" max="20" value="4.5">
+                    </div>
                 </div>
-                </div>
-        </div>
-    </section>
 
-    <section id="features" class="py-32 px-10 border-t border-white/5">
-        <div class="max-w-6xl mx-auto text-center">
-            <h2 class="text-4xl font-black italic uppercase mb-16 translatable" data-en="Advanced Arsenal" data-tr="Gelişmiş Cephanelik">Advanced Arsenal</h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="cyber-card p-6 rounded-2xl border-white/5"><h4 class="font-black italic text-sm">Silent Aimbot</h4></div>
-                <div class="cyber-card p-6 rounded-2xl border-white/5"><h4 class="font-black italic text-sm">Trigger Bot</h4></div>
-                <div class="cyber-card p-6 rounded-2xl border-white/5"><h4 class="font-black italic text-sm">Player ESP</h4></div>
-                <div class="cyber-card p-6 rounded-2xl border-[#10b981]/20 bg-[#10b981]/5 text-[#10b981]"><h4 class="font-black italic text-sm">Stream Proof</h4></div>
+                <div class="relative flex flex-col justify-center items-center">
+                    <div class="esp-corner top-left"></div>
+                    <div class="esp-corner top-right" style="right:20%; top:15%; border-left:0; border-bottom:0;"></div>
+                    <img src="https://i.imgur.com/3Ym9FhM.png" class="h-[350px] opacity-80" alt="Preview">
+                    <div class="absolute bottom-10 bg-[#b993ff]/10 text-[#b993ff] text-[9px] px-4 py-1 rounded font-black tracking-widest animate-pulse">PANTHER ACTIVE</div>
                 </div>
-        </div>
-    </section>
 
-    <section id="security" class="py-32 bg-[#010101] px-10 border-t border-white/5">
-        <div class="max-w-6xl mx-auto text-center">
-            <h2 class="text-4xl font-black italic uppercase mb-16">PC-Check Immunity</h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="cyber-card p-10 rounded-3xl"><div class="laser"></div><img src="echo.png" class="mx-auto mb-4"><h4 class="text-xs font-black uppercase">Echo Scanner</h4><span class="text-green-500 text-[9px] font-bold">UNDETECTED</span></div>
-                <div class="cyber-card p-10 rounded-3xl"><div class="laser"></div><img src="ocean.png" class="mx-auto mb-4"><h4 class="text-xs font-black uppercase">Ocean Scanner</h4><span class="text-green-500 text-[9px] font-bold">UNDETECTED</span></div>
+                <div class="settings-panel">
+                    <div class="text-[10px] font-black text-[#b993ff] tracking-widest uppercase mb-2">Intelligence</div>
+                    <div class="flex justify-between items-center p-3 rounded-lg bg-white/5">
+                        <span class="text-[10px] font-bold">Box ESP</span>
+                        <label class="gui-switch"><input type="checkbox" checked><span class="slider-dot"></span></label>
+                    </div>
+                    <div class="flex justify-between items-center p-3 rounded-lg bg-white/5">
+                        <span class="text-[10px] font-bold">Snaplines</span>
+                        <label class="gui-switch"><input type="checkbox"><span class="slider-dot"></span></label>
+                    </div>
+                    <button onclick="closeMenu()" class="mt-auto w-full py-3 bg-white/5 hover:bg-[#b993ff] hover:text-black transition text-[9px] font-black uppercase rounded-xl">Close Menu</button>
                 </div>
-        </div>
-    </section>
-
-    <section id="store" class="py-32 px-10 border-t border-white/5">
-        <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-10">
-            <div class="glass p-12 rounded-[3.5rem] border-white/5 relative flex flex-col justify-between">
-                <div class="absolute top-0 right-0 bg-white text-black px-6 py-2 text-[9px] font-black uppercase rounded-bl-3xl translatable" data-en="Strictly 30 Slots" data-tr="Sadece 30 Kişilik Kontenjan">Strictly 30 Slots</div>
-                <h3 class="text-3xl font-black italic uppercase mb-4">Panther Public</h3>
-                <p class="text-gray-500 text-[11px] leading-relaxed mb-10 translatable" data-en="A unified framework distributed strictly among 30 users..." data-tr="Kesinlikle sadece 30 kullanıcı arasında dağıtılan birleşik bir altyapı...">A unified framework distributed strictly among 30 users...</p>
-                <button class="w-full py-5 border border-white/10 text-white font-black italic rounded-2xl text-[10px] uppercase translatable" data-en="Purchase Public" data-tr="Public Satın Al">Purchase Public</button>
             </div>
-            <div class="glass p-12 rounded-[3.5rem] border-[#10b981]/30 bg-gradient-to-br from-[#000] to-[#10b981]/10 flex flex-col justify-between">
-                <h3 class="text-3xl font-black italic uppercase mb-4 text-[#10b981]">Panther Private</h3>
-                <p class="text-gray-400 text-[11px] leading-relaxed mb-10 translatable" data-en="The ultimate ghost protocol. 1 of 1 Custom Build..." data-tr="Nihai hayalet protokolü. Kişiye özel benzersiz sürüm...">The ultimate ghost protocol. 1 of 1 Custom Build...</p>
-                <button class="w-full py-5 bg-[#10b981] text-black font-black italic rounded-2xl text-[10px] uppercase translatable" data-en="Apply Private" data-tr="Private Başvur">Apply Private</button>
-            </div>
-        </div>
-    </section>
-
-    <section id="discord" class="py-24 px-10 border-t border-white/5 bg-gradient-to-b from-black to-[#10b981]/5 text-center">
-        <h2 class="text-5xl font-black italic uppercase mb-12 translatable" data-en="Join the Inner Circle" data-tr="İç Çevreye Katıl">Join the Inner Circle</h2>
-        <a href="https://discord.gg/EPYYyc7Qp" class="inline-block px-20 py-6 bg-[#5865F2] text-white rounded-2xl font-black italic text-[11px] uppercase tracking-widest">Connect to Discord</a>
-    </section>
-
-    <footer class="py-20 text-center opacity-10 text-[8px] font-black tracking-[2em] uppercase">Panther Global Stealth Operations / Est. 2026</footer>
-
-    <div id="cheat-overlay" onclick="if(event.target == this) this.style.display='none'">
-        <div class="bg-black border border-[#b993ff]/20 p-10 rounded-3xl shadow-[0_0_50px_rgba(185,147,255,0.1)]">
-            <h2 class="text-[#b993ff] font-black italic text-2xl mb-4">PANTHER EXTERNAL v2.0</h2>
-            <p class="text-gray-500 text-[10px] uppercase tracking-widest">System Injected & Ready.</p>
-            <button onclick="document.getElementById('cheat-overlay').style.display='none'" class="mt-8 text-[9px] text-white/20 hover:text-white uppercase">Close Interface</button>
         </div>
     </div>
 
     <script>
+        // Dil değiştirme
         let currentLang = 'en';
         function toggleLang() {
             currentLang = currentLang === 'en' ? 'tr' : 'en';
@@ -176,6 +147,17 @@
             document.querySelectorAll('.translatable').forEach(el => {
                 el.innerText = el.getAttribute(`data-${currentLang}`);
             });
+        }
+
+        // MENÜ KONTROL FONKSİYONLARI
+        function openMenu() {
+            document.getElementById('cheat-overlay').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Sayfanın kaymasını engelle
+        }
+
+        function closeMenu() {
+            document.getElementById('cheat-overlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
     </script>
 </body>
