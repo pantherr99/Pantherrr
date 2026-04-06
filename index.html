@@ -325,16 +325,29 @@
         </div>
     </section>
 
-    <script>
-        let currentLang = 'en';
-        function toggleLang() {
-            currentLang = currentLang === 'en' ? 'tr' : 'en';
-            document.getElementById('lang-btn').innerText = currentLang === 'en' ? 'EN / TR' : 'TR / EN';
-            const elements = document.querySelectorAll('.translatable');
-            elements.forEach(el => { el.innerText = el.getAttribute(`data-${currentLang}`); });
-        }
-        function openMenu() { document.getElementById('cheat-overlay').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
-        function closeMenu() { document.getElementById('cheat-overlay').style.display = 'none'; document.body.style.overflow = 'auto'; }
-    </script>
+<script>
+    let currentLang = 'en';
+
+    function toggleLang() {
+        currentLang = currentLang === 'en' ? 'tr' : 'en';
+        document.getElementById('lang-btn').innerText = currentLang === 'en' ? 'EN / TR' : 'TR / EN';
+        
+        const elements = document.querySelectorAll('.translatable');
+        elements.forEach(el => { 
+            // data-en veya data-tr özniteliğinden metni al ve güncelle
+            const translatedText = el.getAttribute(`data-${currentLang}`);
+            if (translatedText) {
+                el.innerText = translatedText;
+            }
+        });
+    }
+
+    // Navigasyondaki LOGIN butonuna tıklandığında çalışacak olan
+    function openMenu() {
+        // Eğer giriş sayfasına yönlendirmek istiyorsan:
+        window.location.href = 'login.html';
+        
+    }
+</script>
 </body>
 </html>
