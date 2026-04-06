@@ -81,7 +81,6 @@
     </div>
 
     <script type="module">
-        // onDisconnect eklendi
         import { db, ref, set, get, child, onDisconnect } from "./firebase-config.js";
 
         const btn = document.getElementById('login_btn');
@@ -90,16 +89,17 @@
         const keyInput = document.getElementById('license_input');
 
         btn.addEventListener('click', handleLogin);
+        keyInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
-        keyInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') handleLogin();
-        });
-
-        async function generateHWID() {
-            const msgUint8 = new TextEncoder().encode(navigator.userAgent + navigator.language + screen.width + screen.height);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16).toUpperCase();
+        // GERÇEK HWID KİLİDİ (Benzersiz Cihaz Damgası)
+        function generateHWID() {
+            let deviceID = localStorage.getItem('panther_device_id');
+            if (!deviceID) {
+                // Eğer cihazda damga yoksa, dünyada eşi benzeri olmayan bir ID oluştur ve o PC'ye kaydet.
+                deviceID = crypto.randomUUID(); 
+                localStorage.setItem('panther_device_id', deviceID);
+            }
+            return deviceID;
         }
 
         async function handleLogin() {
@@ -115,85 +115,95 @@
                 return;
             }
 
+            // Arayüz Kilitleme
             btnText.innerText = "VERIFYING...";
             btn.style.opacity = "0.7";
             btn.style.pointerEvents = "none"; 
 
             try {
-                const userHWID = await generateHWID();
+                const userHWID = generateHWID(); // Cihazın damgasını al
                 const dbRef = ref(db);
                 const snapshot = await get(child(dbRef, `keys/${key}`));
 
-                setTimeout(async () => {
-                    if (snapshot.exists()) {
-                        let foundKey = snapshot.val();
-                        let currentTime = new Date().getTime();
+                if (snapshot.exists()) {
+                    let foundKey = snapshot.val();
+                    let currentTime = new Date().getTime();
 
-                        // DURUM 1: UNUSED (İlk kez giriş)
-                        if (foundKey.status === 'UNUSED') {
-                            foundKey.status = 'ACTIVE';
-                            let daysInMs = parseInt(foundKey.days) * 24 * 60 * 60 * 1000;
-                            foundKey.expireDate = currentTime + daysInMs;
-                            foundKey.hwid = userHWID;
-                            foundKey.activatedAt = currentTime; 
-                            foundKey.isOnline = true; // Online yap
-                            
-                            await set(ref(db, 'keys/' + key), foundKey);
+                    // DURUM 1: UNUSED (Lisans İlk Kez Kullanılıyor)
+                    if (foundKey.status === 'UNUSED') {
+                        foundKey.status = 'ACTIVE';
+                        foundKey.expireDate = currentTime + (parseInt(foundKey.days) * 86400000);
+                        
+                        // LİSANSI BU PC'YE KİLİTLE
+                        foundKey.hwid = userHWID; 
+                        
+                        foundKey.isOnline = true;
+                        foundKey.activatedAt = currentTime;
 
-                            // Sekme kapanınca otomatik offline yap
-                            onDisconnect(ref(db, 'keys/' + key + '/isOnline')).set(false);
-                            
-                            localStorage.setItem('panther_active_key', key);
-                            localStorage.setItem('current_user', JSON.stringify(foundKey));
-                            window.location.href = "dashboard.html";
-                        } 
-                        // DURUM 2: ACTIVE (Tekrar giriş)
-                        else if (foundKey.status === 'ACTIVE') {
-                            if (currentTime > foundKey.expireDate) {
-                                foundKey.status = 'EXPIRED';
-                                foundKey.isOnline = false;
-                                await set(ref(db, 'keys/' + key), foundKey);
-                                showError("LİSANS SÜRESİ DOLMUŞTUR!");
-                            } else {
-                                if (foundKey.hwid && foundKey.hwid !== userHWID) {
-                                    showError("BU LİSANS BAŞKA BİR CİHAZA KAYITLIDIR!");
-                                } else {
-                                    foundKey.activatedAt = currentTime;
-                                    foundKey.isOnline = true; // Online yap
-                                    
-                                    await set(ref(db, 'keys/' + key), foundKey);
+                        await set(ref(db, 'keys/' + key), foundKey);
+                        onDisconnect(ref(db, `keys/${key}/isOnline`)).set(false);
 
-                                    // Sekme kapanınca otomatik offline yap
-                                    onDisconnect(ref(db, 'keys/' + key + '/isOnline')).set(false);
-
-                                    localStorage.setItem('panther_active_key', key);
-                                    localStorage.setItem('current_user', JSON.stringify(foundKey));
-                                    window.location.href = "dashboard.html";
-                                }
-                            }
-                        } 
-                        else {
-                            showError("LİSANS GEÇERSİZ VEYA SÜRESİ BİTMİŞ!");
+                        finalizeLogin(key, foundKey);
+                    } 
+                    // DURUM 2: ACTIVE (Lisans Daha Önce Kullanılmış)
+                    else if (foundKey.status === 'ACTIVE') {
+                        
+                        // ÖNCE HWID KONTROLÜ YAP (Farklı PC ise anında reddet)
+                        if (foundKey.hwid && foundKey.hwid !== userHWID) {
+                            showError("BU LİSANS BAŞKA BİR CİHAZA KAYITLIDIR!");
+                            resetUI();
+                            return; // İşlemi tamamen durdur
                         }
 
-                    } else {
-                        showError("GEÇERSİZ PROTOKOL ANAHTARI!");
+                        // HWID eşleşiyorsa süreyi kontrol et
+                        if (currentTime > foundKey.expireDate) {
+                            foundKey.status = 'EXPIRED';
+                            foundKey.isOnline = false;
+                            await set(ref(db, 'keys/' + key), foundKey);
+                            showError("LİSANS SÜRESİ DOLMUŞTUR!");
+                        } 
+                        // Aynı kişi başka sekmede zaten açıksa
+                        else if (foundKey.isOnline === true) {
+                            showError("BU LİSANS ŞU AN KULLANIMDA!");
+                        } 
+                        // Kendi PC'si, süresi var ve online değilse içeri al
+                        else {
+                            foundKey.isOnline = true;
+                            await set(ref(db, 'keys/' + key), foundKey);
+                            onDisconnect(ref(db, `keys/${key}/isOnline`)).set(false);
+                            
+                            finalizeLogin(key, foundKey);
+                        }
+                    } 
+                    else {
+                        showError("LİSANS GEÇERSİZ!");
                     }
-                }, 1000);
-
+                } else {
+                    showError("GEÇERSİZ PROTOKOL ANAHTARI!");
+                }
             } catch (error) {
                 console.error(error);
                 showError("SUNUCU BAĞLANTI HATASI!");
             }
+            resetUI();
+        }
+
+        function finalizeLogin(key, data) {
+            localStorage.setItem('panther_active_key', key);
+            localStorage.setItem('current_user', JSON.stringify(data));
+            window.location.href = "dashboard.html";
         }
 
         function showError(msg) {
             errorMsg.innerText = msg;
             errorMsg.style.opacity = "1";
+            setTimeout(() => { errorMsg.style.opacity = "0"; }, 3000);
+        }
+
+        function resetUI() {
             btnText.innerText = "INITIALIZE PROTOCOL";
             btn.style.opacity = "1";
             btn.style.pointerEvents = "auto";
-            setTimeout(() => { errorMsg.style.opacity = "0"; }, 3000);
         }
     </script>
 </body>
