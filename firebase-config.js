@@ -13,7 +13,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyCjMAo3sazNWx5aNFS9RnOahAqNOxyMmjA",
     authDomain: "panter-f9c0e.firebaseapp.com",
     // EKSİK OLAN VE HATAYA SEBEP OLAN SATIR BUYDU:
-    databaseURL: "https://panter-f9c0e-default-rtdb.firebaseio.com", 
+    databaseURL: "https://panter-f9c0e-default-rtdb.europe-west1.firebasedatabase.app", 
     projectId: "panter-f9c0e",
     storageBucket: "panter-f9c0e.firebasestorage.app",
     messagingSenderId: "123104603113",
