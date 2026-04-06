@@ -24,7 +24,18 @@
 
         .glass { background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); }
 
-        /* SCANNER EFFECT */
+        /* SCANNER & FEATURE BOX STYLING */
+        .cyber-card {
+            position: relative; overflow: hidden;
+            background: linear-gradient(145deg, #050505, #0a0a0a);
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: all 0.4s ease;
+        }
+        .cyber-card:hover { border-color: rgba(16, 185, 129, 0.4); transform: translateY(-5px); }
+        .cyber-card img { height: 40px; filter: grayscale(100%) brightness(0.6); transition: 0.4s; }
+        .cyber-card:hover img { filter: grayscale(0%) brightness(1.2); }
+        
+        /* THE LASER EFFECT */
         .laser {
             position: absolute; top: 0; left: 0; width: 100%; height: 1px;
             background: #10b981; box-shadow: 0 0 15px #10b981;
@@ -32,7 +43,10 @@
         }
         @keyframes laserScan { 0% { top: 0%; } 100% { top: 100%; } }
 
-        /* HİLE MENÜSÜ OVERLAY */
+        input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); outline: none; transition: 0.3s; }
+        input:focus { border-color: #10b981; background: rgba(16, 185, 129, 0.02); box-shadow: 0 0 20px rgba(16,185,129,0.1); }
+
+        /* --- HİLE MENÜSÜ OVERLAY & TASARIM --- */
         #cheat-overlay {
             display: none;
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -50,13 +64,16 @@
         }
         @keyframes menuZoom { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
+        /* Sidebar & Items */
         .sidebar { width: 85px; background: rgba(8, 8, 8, 0.5); border-right: 1px solid rgba(255, 255, 255, 0.03); display: flex; flex-direction: column; align-items: center; padding: 30px 0; border-radius: 20px 0 0 20px; }
         .nav-item { width: 48px; height: 48px; margin-bottom: 22px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; transition: 0.3s; color: #333; }
         .nav-item.active { color: #b993ff; background: rgba(185, 147, 255, 0.08); box-shadow: 0 0 15px rgba(185, 147, 255, 0.1); }
 
+        /* Main Menu Grid */
         .menu-grid { flex: 1; display: grid; grid-template-columns: 270px 1fr 270px; padding: 30px; gap: 25px; }
         .settings-panel { background: rgba(15, 15, 15, 0.4); border: 1px solid rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
         
+        /* GUI Elements */
         .gui-switch { position: relative; width: 34px; height: 18px; }
         .gui-switch input { opacity: 0; width: 0; height: 0; }
         .slider-dot { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1a1a1a; transition: .3s; border-radius: 20px; }
@@ -76,6 +93,7 @@
         <div class="hidden md:flex space-x-12 text-[9px] font-bold uppercase tracking-[0.4em] text-gray-500">
             <a href="#home" class="hover:text-white transition translatable" data-en="Home" data-tr="Ana Sayfa">Home</a>
             <a href="#protocol" class="hover:text-white transition translatable" data-en="Protocol" data-tr="Protokol">Protocol</a>
+            <a href="#intelligence" class="hover:text-white transition translatable" data-en="Intelligence" data-tr="İstihbarat">Intelligence</a>
             <a href="#features" class="hover:text-white transition translatable" data-en="Features" data-tr="Özellikler">Features</a>
             <a href="#security" class="hover:text-white transition translatable" data-en="Security" data-tr="Güvenlik">Security</a>
             <a href="#store" class="hover:text-white transition translatable" data-en="Store" data-tr="Mağaza">Store</a>
@@ -104,10 +122,72 @@
             <div class="absolute w-2 h-2 bg-[#10b981] rounded-full -left-[4px] top-0 shadow-[0_0_15px_#10b981]"></div>
             <h2 class="text-4xl font-black italic uppercase mb-6 text-white tracking-tighter translatable" data-en="The Panther Protocol" data-tr="Panther Protokolü">The Panther Protocol</h2>
             <p class="text-gray-400 text-sm leading-loose font-medium mb-6 translatable" 
-               data-en="Operating strictly in the shadows, Panther utilizes state-of-the-art polymorphic engine technology and Ring-0 kernel execution. Our system bypasses traditional detection vectors by mimicking legitimate system processes." 
-               data-tr="Sadece gölgelerde faaliyet gösteren Panther, son teknoloji polimorfik motor teknolojisi ve Ring-0 çekirdek seviyesi yürütme kullanır. Sistemimiz, yasal sistem süreçlerini taklit ederek geleneksel tespit vektörlerini atlatır.">
-               Operating strictly in the shadows, Panther utilizes state-of-the-art polymorphic engine technology and Ring-0 kernel execution.
+               data-en="Operating strictly in the shadows, Panther utilizes state-of-the-art polymorphic engine technology and Ring-0 kernel execution. We don't just bypass modern anti-cheats; we exist entirely outside their jurisdiction. Every byte of our code is dynamically encrypted in your RAM, leaving zero residual strings, zero signature trails, and absolutely no digital footprint." 
+               data-tr="Sadece gölgelerde faaliyet gösteren Panther, son teknoloji polimorfik motor teknolojisi ve Ring-0 çekirdek seviyesi yürütme kullanır. Modern anti-hile sistemlerini sadece atlamıyoruz; onların yetki alanının tamamen dışında var oluyoruz. Kodumuzun her baytı RAM'inizde dinamik olarak şifrelenir; geriye sıfır kalıntı dizesi, sıfır imza izi ve kesinlikle dijital bir ayak izi bırakmaz.">
+               Operating strictly in the shadows, Panther utilizes state-of-the-art polymorphic engine technology and Ring-0 kernel execution. We don't just bypass modern anti-cheats; we exist entirely outside their jurisdiction. Every byte of our code is dynamically encrypted in your RAM, leaving zero residual strings, zero signature trails, and absolutely no digital footprint.
             </p>
+            <p class="text-gray-500 text-sm leading-loose font-medium translatable" 
+               data-en="When you inject Panther into your system, you stop being a regular player. You become an invisible anomaly. Our proprietary stream-proof overlay manipulates the game engine at its core without triggering integrity checks. You see everything. They see nothing." 
+               data-tr="Panther'i sisteminize inject ettiğinizde, sıradan bir oyuncu olmayı bırakırsınız. Görünmez bir anomaliye dönüşürsünüz. Bize özel yayın-gizli (stream-proof) arayüzümüz, oyun motorunu bütünlük kontrollerini tetiklemeden çekirdeğinden manipüle eder. Siz her şeyi görürsünüz. Onlar hiçbir şey göremez.">
+               When you inject Panther into your system, you stop being a regular player. You become an invisible anomaly. Our proprietary stream-proof overlay manipulates the game engine at its core without triggering integrity checks. You see everything. They see nothing.
+            </p>
+        </div>
+    </section>
+
+    <section id="intelligence" class="py-32 px-10 border-t border-white/5 bg-[#010101]">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-16">
+                <div class="space-y-6">
+                    <h2 class="text-3xl font-black italic uppercase tracking-tighter border-b border-[#10b981]/20 pb-4 text-white translatable" data-en="Absolute Undetected & Manual Control Immunity" data-tr="Mutlak Gizlilik ve Manuel Kontrol Dokunulmazlığı">Absolute Undetected & Manual Control Immunity</h2>
+                    <p class="text-gray-400 text-sm leading-[2em] font-medium text-justify translatable" 
+                       data-en="Panther is engineered entirely from the ground up to operate outside the boundaries of conventional anti-cheat detection methods. We do not just bypass memory scans; our Ring-0 hypervisor architecture ensures that the software completely hides its presence from the operating system itself. Panther passes all automated anti-cheats flawlessly. More importantly, it is strictly designed to survive deep invasive manual checks. Even if a server admin freezes your PC and deep-scans your processes, registry, or execution logs, Panther leaves zero digital footprint. You cannot be caught in manual control." 
+                       data-tr="Panther, geleneksel anti-hile tespit yöntemlerinin sınırları dışında çalışacak şekilde tamamen sıfırdan tasarlanmıştır. Sadece bellek taramalarını atlatmakla kalmıyoruz; Ring-0 hypervisor mimarimiz, yazılımın varlığını işletim sisteminin kendisinden bile tamamen gizlemesini sağlar. Panther, tüm otomatik anti-hileleri sorunsuzca geçer. Daha da önemlisi, derinlemesine ve invaziv manuel kontrollere (PC-Check) dayanacak şekilde özel olarak dizayn edilmiştir. Bir sunucu yetkilisi bilgisayarınızı dondurup işlemlerinizi, kayıt defterinizi veya yürütme günlüklerinizi derinlemesine tarasa bile, Panther geride sıfır dijital ayak izi bırakır. Manuel kontrolde asla yakalanmazsınız.">
+                       Panther is engineered entirely from the ground up to operate outside the boundaries of conventional anti-cheat detection methods. We do not just bypass memory scans; our Ring-0 hypervisor architecture ensures that the software completely hides its presence from the operating system itself. Panther passes all automated anti-cheats flawlessly. More importantly, it is strictly designed to survive deep invasive manual checks. Even if a server admin freezes your PC and deep-scans your processes, registry, or execution logs, Panther leaves zero digital footprint. You cannot be caught in manual control.
+                    </p>
+                </div>
+                <div class="space-y-6">
+                    <h2 class="text-3xl font-black italic uppercase tracking-tighter border-b border-[#10b981]/20 pb-4 text-white translatable" data-en="Cloud Configuration & Seamless Injection" data-tr="Bulut Yapılandırma ve Kusursuz Enjeksiyon">Cloud Configuration & Seamless Injection</h2>
+                    <p class="text-gray-400 text-sm leading-[2em] font-medium text-justify translatable" 
+                       data-en="Flexibility is just as critical as security. Our framework features a highly advanced Cloud Config System that allows you to instantly save, share, and import custom profiles. Whether you need a 'Legit Config' with subtle smoothing for casual streaming or a 'Rage Config' with maximum FOV and instant bone-targeting for dominance, switching takes less than a second. Your configurations are encrypted and tied to your account, ensuring your exact playstyle is ready the moment you inject. Combined with our Stream-Proof overlay, the entire interface remains completely invisible to OBS, Discord, and all recording software." 
+                       data-tr="Esneklik de en az güvenlik kadar kritiktir. Altyapımız, özel profilleri anında kaydetmenize, paylaşmanıza ve içe aktarmanıza olanak tanıyan oldukça gelişmiş bir Bulut Config Sistemi (Cloud Config) sunar. Rahat bir yayın için ince yumuşatmalı (smoothing) bir 'Legit Config'e veya tam dominasyon için maksimum FOV ve anında kemik hedeflemeli bir 'Rage Config'e ihtiyacınız olsun, geçiş yapmak bir saniyeden az sürer. Yapılandırmalarınız şifrelenir ve hesabınıza bağlanır, inject ettiğiniz an tam olarak istediğiniz oyun tarzının hazır olmasını sağlar. Yayın-Gizli (Stream-Proof) arayüzümüzle birleştiğinde, tüm hile menüsü OBS, Discord ve tüm kayıt yazılımlarına karşı tamamen görünmez kalır.">
+                       Flexibility is just as critical as security. Our framework features a highly advanced Cloud Config System that allows you to instantly save, share, and import custom profiles. Whether you need a 'Legit Config' with subtle smoothing for casual streaming or a 'Rage Config' with maximum FOV and instant bone-targeting for dominance, switching takes less than a second. Your configurations are encrypted and tied to your account, ensuring your exact playstyle is ready the moment you inject. Combined with our Stream-Proof overlay, the entire interface remains completely invisible to OBS, Discord, and all recording software.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-32 px-10 border-t border-white/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black italic uppercase mb-4 translatable" data-en="Advanced Arsenal" data-tr="Gelişmiş Cephanelik">Advanced Arsenal</h2>
+                <p class="text-gray-500 text-[10px] font-bold tracking-[0.3em] uppercase translatable" data-en="Forged in the underground. Built for total dominance." data-tr="Yeraltında dövüldü. Mutlak hakimiyet için tasarlandı.">Forged in the underground. Built for total dominance.</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="cyber-card p-6 rounded-2xl border-white/5"><h4 class="font-black italic text-sm">Silent Aimbot</h4><p class="text-[9px] text-gray-500 uppercase mt-2 translatable" data-en="Invisible vector lock-on mechanics" data-tr="Görünmez vektörel kilitlenme mekaniği">Invisible vector lock-on mechanics</p></div>
+                <div class="cyber-card p-6 rounded-2xl border-white/5"><h4 class="font-black italic text-sm">Trigger Bot</h4><p class="text-[9px] text-gray-500 uppercase mt-2 translatable" data-en="Millisecond automated precision" data-tr="Milisaniyelik otomatik hassasiyet">Millisecond automated precision</p></div>
+                <div class="cyber-card p-6 rounded-2xl border-white/5"><h4 class="font-black italic text-sm">Player ESP</h4><p class="text-[9px] text-gray-500 uppercase mt-2 translatable" data-en="Full skeleton, box & distance rendering" data-tr="Tam iskelet, kutu ve mesafe işlemesi">Full skeleton, box & distance rendering</p></div>
+                <div class="cyber-card p-6 rounded-2xl border-white/5"><h4 class="font-black italic text-sm">Vehicle ESP</h4><p class="text-[9px] text-gray-500 uppercase mt-2 translatable" data-en="Track all engines through walls" data-tr="Duvarların arkasından tüm araçları izle">Track all engines through walls</p></div>
+                <div class="cyber-card p-6 rounded-2xl border-white/5"><h4 class="font-black italic text-sm">Car Fix</h4><p class="text-[9px] text-gray-500 uppercase mt-2 translatable" data-en="Instant real-time integrity repair" data-tr="Anında gerçek zamanlı bütünlük onarımı">Instant real-time integrity repair</p></div>
+                <div class="cyber-card p-6 rounded-2xl border-white/5"><h4 class="font-black italic text-sm">Infinite Ammo</h4><p class="text-[9px] text-gray-500 uppercase mt-2 translatable" data-en="Memory-edited magazine bypass" data-tr="Bellek düzenlemeli şarjör baypası">Memory-edited magazine bypass</p></div>
+                <div class="cyber-card p-6 rounded-2xl border-white/5"><h4 class="font-black italic text-sm">Teleport</h4><p class="text-[9px] text-gray-500 uppercase mt-2 translatable" data-en="Coordinate overriding traversal" data-tr="Koordinat geçersiz kılan ışınlanma">Coordinate overriding traversal</p></div>
+                <div class="cyber-card p-6 rounded-2xl border-[#10b981]/20 bg-[#10b981]/5"><h4 class="font-black italic text-sm text-[#10b981]">Stream Proof</h4><p class="text-[9px] text-[#10b981]/80 uppercase mt-2 translatable" data-en="OBS & Discord screen-share stealth" data-tr="OBS ve Discord ekran paylaşımı gizliliği">OBS & Discord screen-share stealth</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="security" class="py-32 bg-[#010101] px-10 border-t border-white/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black italic uppercase mb-4">PC-Check Immunity</h2>
+                <p class="text-gray-500 text-[10px] font-bold tracking-[0.3em] uppercase translatable" data-en="Bypassing Top-Tier Security Protocols" data-tr="Üst Düzey Güvenlik Protokollerini Aşma">Bypassing Top-Tier Security Protocols</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="cyber-card p-10 rounded-3xl text-center"><div class="laser"></div><img src="echo.png" alt="Echo" class="mx-auto mb-4"><h4 class="text-xs font-black uppercase italic text-gray-400 mb-1">Echo Scanner</h4><span class="text-[9px] text-green-500 font-bold uppercase tracking-widest translatable" data-en="Undetected" data-tr="Temiz (Yakalanmaz)">Undetected</span></div>
+                <div class="cyber-card p-10 rounded-3xl text-center"><div class="laser"></div><img src="ocean.png" alt="Ocean" class="mx-auto mb-4"><h4 class="text-xs font-black uppercase italic text-gray-400 mb-1">Ocean Scanner</h4><span class="text-[9px] text-green-500 font-bold uppercase tracking-widest translatable" data-en="Undetected" data-tr="Temiz (Yakalanmaz)">Undetected</span></div>
+                <div class="cyber-card p-10 rounded-3xl text-center"><div class="laser"></div><img src="storm.png" alt="Storm" class="mx-auto mb-4"><h4 class="text-xs font-black uppercase italic text-gray-400 mb-1">Storm Scanner</h4><span class="text-[9px] text-green-500 font-bold uppercase tracking-widest translatable" data-en="Undetected" data-tr="Temiz (Yakalanmaz)">Undetected</span></div>
+                <div class="cyber-card p-10 rounded-3xl text-center"><div class="laser"></div><img src="nexora.png" alt="Nexora" class="mx-auto mb-4"><h4 class="text-xs font-black uppercase italic text-gray-400 mb-1">Nexora Scanner</h4><span class="text-[9px] text-green-500 font-bold uppercase tracking-widest translatable" data-en="Undetected" data-tr="Temiz (Yakalanmaz)">Undetected</span></div>
+            </div>
         </div>
     </section>
 
@@ -118,80 +198,131 @@
                 <p class="text-gray-500 text-[10px] font-bold tracking-[0.4em] uppercase translatable" data-en="Choose Your Deployment Protocol" data-tr="Dağıtım Protokolünüzü Seçin">Choose Your Deployment Protocol</p>
             </div>
 
-            <div class="mb-10 flex items-center justify-center space-x-4">
+            <div class="mb-8 flex items-center justify-center space-x-4">
                 <div class="h-[1px] w-12 bg-white/20"></div>
                 <h3 class="text-xl font-black italic uppercase text-gray-400 tracking-widest translatable" data-en="Public Frameworks" data-tr="Public Altyapılar">Public Frameworks</h3>
                 <div class="h-[1px] w-12 bg-white/20"></div>
             </div>
             
-            <div class="grid md:grid-cols-3 gap-6 mb-24">
-                <div class="glass p-8 rounded-[2rem] border-white/10 relative flex flex-col hover:border-white/30 transition-all">
-                    <div class="absolute top-0 right-0 bg-white/10 text-white px-4 py-1.5 text-[8px] font-black uppercase rounded-bl-xl translatable" data-en="1 SLOT" data-tr="1 KİŞİLİK">1 SLOT</div>
-                    <h4 class="text-2xl font-black italic uppercase mb-1 text-gray-200">Public Solo</h4>
-                    <div class="text-4xl font-black mb-6">$15<span class="text-xs text-gray-500 font-medium">/mo</span></div>
-                    <ul class="text-[11px] text-gray-400 space-y-3 mb-8 flex-1">
-                        <li class="flex items-center"><span class="w-1 h-1 bg-white rounded-full mr-2"></span> <span class="translatable" data-en="1 Active HWID" data-tr="1 Aktif HWID">1 Active HWID</span></li>
-                        <li class="flex items-center"><span class="w-1 h-1 bg-white rounded-full mr-2"></span> <span class="translatable" data-en="Public Updates" data-tr="Public Güncellemeler">Public Updates</span></li>
+            <div class="grid md:grid-cols-3 gap-8 mb-24">
+                <div class="glass p-10 rounded-[2.5rem] border-white/10 relative flex flex-col hover:border-white/30 transition-all duration-500 group">
+                    <div class="absolute top-0 right-0 bg-white text-black px-5 py-2 text-[9px] font-black uppercase rounded-bl-2xl translatable" data-en="STRICTLY 1 SLOT" data-tr="SADECE 1 KİŞİLİK">STRICTLY 1 SLOT</div>
+                    <h4 class="text-3xl font-black italic uppercase mb-2 group-hover:text-white transition-colors text-gray-200">Public Solo</h4>
+                    <p class="text-yellow-500 text-[9px] font-bold uppercase mb-6 tracking-widest translatable" data-en="⚠️ SHARED RISK PROTOCOL" data-tr="⚠️ ORTAK RİSK PROTOKOLÜ">⚠️ SHARED RISK PROTOCOL</p>
+                    
+                    <div class="text-5xl font-black mb-8">$15<span class="text-sm text-gray-500 font-medium">/mo</span></div>
+                    
+                    <ul class="text-xs text-gray-400 space-y-4 mb-10 flex-1 font-medium">
+                        <li class="flex items-center"><span class="w-1.5 h-1.5 bg-white rounded-full mr-3"></span> <span class="translatable" data-en="1 Active HWID Slot" data-tr="1 Aktif HWID Yuvası">1 Active HWID Slot</span></li>
+                        <li class="flex items-center"><span class="w-1.5 h-1.5 bg-white rounded-full mr-3"></span> <span class="translatable" data-en="Shared Signature Integrity" data-tr="Ortak İmza Bütünlüğü">Shared Signature Integrity</span></li>
+                        <li class="flex items-center"><span class="w-1.5 h-1.5 bg-white rounded-full mr-3"></span> <span class="translatable" data-en="OBS & Discord Stream Proof" data-tr="OBS ve Discord Yayın Gizliliği">OBS & Discord Stream Proof</span></li>
+                        <li class="flex items-center"><span class="w-1.5 h-1.5 bg-white rounded-full mr-3"></span> <span class="translatable" data-en="Standard Community Support" data-tr="Standart Topluluk Desteği">Standard Community Support</span></li>
                     </ul>
-                    <button class="w-full py-3 border border-white/20 hover:bg-white hover:text-black transition rounded-xl font-black italic uppercase text-[9px] tracking-widest translatable" data-en="Purchase Solo" data-tr="Solo Satın Al">Purchase Solo</button>
+                    <button class="w-full py-4 border border-white/20 hover:bg-white hover:text-black transition rounded-2xl font-black italic uppercase text-[10px] tracking-widest translatable" data-en="Purchase Solo Access" data-tr="Solo Erişimi Satın Al">Purchase Solo Access</button>
                 </div>
 
-                <div class="glass p-8 rounded-[2rem] border-white/10 relative flex flex-col hover:border-white/30 transition-all scale-105 bg-white/5">
-                    <div class="absolute top-0 right-0 bg-white text-black px-4 py-1.5 text-[8px] font-black uppercase rounded-bl-xl translatable" data-en="2 SLOTS" data-tr="2 KİŞİLİK">2 SLOTS</div>
-                    <h4 class="text-2xl font-black italic uppercase mb-1 text-white">Public Duo</h4>
-                    <div class="text-4xl font-black mb-6">$25<span class="text-xs text-gray-500 font-medium">/mo</span></div>
-                    <ul class="text-[11px] text-gray-400 space-y-3 mb-8 flex-1">
-                        <li class="flex items-center"><span class="w-1 h-1 bg-white rounded-full mr-2"></span> <span class="translatable" data-en="2 Active HWIDs" data-tr="2 Aktif HWID">2 Active HWIDs</span></li>
+                <div class="glass p-10 rounded-[2.5rem] border-white/10 relative flex flex-col hover:border-white/30 transition-all duration-500 group">
+                    <div class="absolute top-0 right-0 bg-white text-black px-5 py-2 text-[9px] font-black uppercase rounded-bl-2xl translatable" data-en="STRICTLY 2 SLOTS" data-tr="SADECE 2 KİŞİLİK">STRICTLY 2 SLOTS</div>
+                    <h4 class="text-3xl font-black italic uppercase mb-2 group-hover:text-white transition-colors text-gray-200">Public Duo</h4>
+                    <p class="text-yellow-500 text-[9px] font-bold uppercase mb-6 tracking-widest translatable" data-en="⚠️ SHARED RISK PROTOCOL" data-tr="⚠️ ORTAK RİSK PROTOKOLÜ">⚠️ SHARED RISK PROTOCOL</p>
+                    
+                    <div class="text-5xl font-black mb-8">$30<span class="text-sm text-gray-500 font-medium">/mo</span></div>
+                    
+                    <ul class="text-xs text-gray-400 space-y-4 mb-10 flex-1 font-medium">
+                        <li class="flex items-center"><span class="w-1.5 h-1.5 bg-white rounded-full mr-3"></span> <span class="translatable" data-en="2 Active HWID Slots" data-tr="2 Aktif HWID Yuvası">2 Active HWID Slots</span></li>
+                        <li class="flex items-center"><span class="w-1.5 h-1.5 bg-white rounded-full mr-3"></span> <span class="translatable" data-en="Shared Signature Integrity" data-tr="Ortak İmza Bütünlüğü">Shared Signature Integrity</span></li>
+                        <li class="flex items-center"><span class="w-1.5 h-1.5 bg-white rounded-full mr-3"></span> <span class="translatable" data-en="OBS & Discord Stream Proof" data-tr="OBS ve Discord Yayın Gizliliği">OBS & Discord Stream Proof</span></li>
+                        <li class="flex items-center"><span class="w-1.5 h-1.5 bg-white rounded-full mr-3"></span> <span class="translatable" data-en="Standard Community Support" data-tr="Standart Topluluk Desteği">Standard Community Support</span></li>
                     </ul>
-                    <button class="w-full py-3 bg-white text-black transition rounded-xl font-black italic uppercase text-[9px] tracking-widest translatable" data-en="Purchase Duo" data-tr="Duo Satın Al">Purchase Duo</button>
+                    <button class="w-full py-4 border border-white/20 hover:bg-white hover:text-black transition rounded-2xl font-black italic uppercase text-[10px] tracking-widest translatable" data-en="Purchase Duo Access" data-tr="Duo Erişimi Satın Al">Purchase Duo Access</button>
                 </div>
 
-                <div class="glass p-8 rounded-[2rem] border-white/10 relative flex flex-col hover:border-white/30 transition-all">
-                    <div class="absolute top-0 right-0 bg-white/10 text-white px-4 py-1.5 text-[8px] font-black uppercase rounded-bl-xl translatable" data-en="4 SLOTS" data-tr="4 KİŞİLİK">4 SLOTS</div>
-                    <h4 class="text-2xl font-black italic uppercase mb-1 text-gray-200">Public Quad</h4>
-                    <div class="text-4xl font-black mb-6">$45<span class="text-xs text-gray-500 font-medium">/mo</span></div>
-                    <ul class="text-[11px] text-gray-400 space-y-3 mb-8 flex-1">
-                        <li class="flex items-center"><span class="w-1 h-1 bg-white rounded-full mr-2"></span> <span class="translatable" data-en="4 Active HWIDs" data-tr="4 Aktif HWID">4 Active HWIDs</span></li>
+                <div class="glass p-10 rounded-[2.5rem] border-white/10 relative flex flex-col hover:border-white/30 transition-all duration-500 group">
+                    <div class="absolute top-0 right-0 bg-white text-black px-5 py-2 text-[9px] font-black uppercase rounded-bl-2xl translatable" data-en="STRICTLY 4 SLOTS" data-tr="SADECE 4 KİŞİLİK">STRICTLY 4 SLOTS</div>
+                    <h4 class="text-3xl font-black italic uppercase mb-2 group-hover:text-white transition-colors text-gray-200">Public Quad</h4>
+                    <p class="text-yellow-500 text-[9px] font-bold uppercase mb-6 tracking-widest translatable" data-en="⚠️ SHARED RISK PROTOCOL" data-tr="⚠️ ORTAK RİSK PROTOKOLÜ">⚠️ SHARED RISK PROTOCOL</p>
+                    
+                    <div class="text-5xl font-black mb-8">$50<span class="text-sm text-gray-500 font-medium">/mo</span></div>
+                    
+                    <ul class="text-xs text-gray-400 space-y-4 mb-10 flex-1 font-medium">
+                        <li class="flex items-center"><span class="w-1.5 h-1.5 bg-white rounded-full mr-3"></span> <span class="translatable" data-en="4 Active HWID Slots" data-tr="4 Aktif HWID Yuvası">4 Active HWID Slots</span></li>
+                        <li class="flex items-center"><span class="w-1.5 h-1.5 bg-white rounded-full mr-3"></span> <span class="translatable" data-en="Squad Discount Applied" data-tr="Ekip İndirimi Uygulandı">Squad Discount Applied</span></li>
+                        <li class="flex items-center"><span class="w-1.5 h-1.5 bg-white rounded-full mr-3"></span> <span class="translatable" data-en="OBS & Discord Stream Proof" data-tr="OBS ve Discord Yayın Gizliliği">OBS & Discord Stream Proof</span></li>
+                        <li class="flex items-center"><span class="w-1.5 h-1.5 bg-white rounded-full mr-3"></span> <span class="translatable" data-en="Priority Setup Assistance" data-tr="Öncelikli Kurulum Desteği">Priority Setup Assistance</span></li>
                     </ul>
-                    <button class="w-full py-3 border border-white/20 hover:bg-white hover:text-black transition rounded-xl font-black italic uppercase text-[9px] tracking-widest translatable" data-en="Purchase Quad" data-tr="Quad Satın Al">Purchase Quad</button>
+                    <button class="w-full py-4 border border-white/20 hover:bg-white hover:text-black transition rounded-2xl font-black italic uppercase text-[10px] tracking-widest translatable" data-en="Purchase Quad Access" data-tr="Quad Erişimi Satın Al">Purchase Quad Access</button>
                 </div>
             </div>
 
-            <div class="mb-10 flex items-center justify-center space-x-4">
+            <div class="mb-8 flex items-center justify-center space-x-4 relative z-10">
                 <div class="h-[1px] w-12 bg-[#10b981]/50"></div>
-                <h3 class="text-xl font-black italic uppercase text-[#10b981] tracking-widest translatable" data-en="Private Ghost Builds" data-tr="Kişiye Özel Hayalet Sürümler">Private Ghost Builds</h3>
+                <h3 class="text-xl font-black italic uppercase text-[#10b981] tracking-widest drop-shadow-[0_0_10px_rgba(16,185,129,0.8)] translatable" data-en="Private Ghost Builds" data-tr="Kişiye Özel Hayalet Sürümler">Private Ghost Builds</h3>
                 <div class="h-[1px] w-12 bg-[#10b981]/50"></div>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="glass p-8 rounded-[2rem] border-[#10b981]/20 bg-gradient-to-br from-black to-[#10b981]/5 relative flex flex-col hover:border-[#10b981]/50 transition-all">
-                    <div class="absolute top-0 right-0 bg-[#10b981]/20 text-[#10b981] px-4 py-1.5 text-[8px] font-black uppercase rounded-bl-xl translatable" data-en="1 OF 1 BUILD" data-tr="KİŞİYE ÖZEL">1 OF 1 BUILD</div>
-                    <h4 class="text-2xl font-black italic uppercase mb-1 text-[#10b981]">Private Solo</h4>
-                    <div class="text-4xl font-black mb-6 text-white">$50<span class="text-xs text-gray-500 font-medium">/mo</span></div>
-                    <ul class="text-[11px] text-gray-300 space-y-3 mb-8 flex-1">
-                        <li class="flex items-center"><svg class="w-3 h-3 text-[#10b981] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="Personal Polymorph" data-tr="Kişisel Polimorfik Motor">Personal Polymorph</span></li>
+            <div class="grid md:grid-cols-3 gap-8 relative">
+                <div class="absolute inset-0 bg-[#10b981]/5 blur-[100px] rounded-full pointer-events-none"></div>
+                
+                <div class="glass p-10 rounded-[2.5rem] border-[#10b981]/30 bg-gradient-to-br from-black to-[#10b981]/5 relative flex flex-col hover:border-[#10b981]/60 transition-all duration-500 hover:transform hover:-translate-y-1">
+                    <div class="absolute top-0 right-0 bg-[#10b981] text-black px-5 py-2 text-[9px] font-black uppercase rounded-bl-2xl translatable" data-en="1 OF 1 CUSTOM BUILD" data-tr="KİŞİYE ÖZEL 1/1 SÜRÜM">1 OF 1 CUSTOM BUILD</div>
+                    <h4 class="text-3xl font-black italic uppercase mb-2 text-[#10b981] drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">Private Solo</h4>
+                    <p class="text-red-400 text-[9px] font-bold uppercase mb-6 tracking-widest translatable" data-en="🛡️ ABSOLUTE IMMUNITY" data-tr="🛡️ MUTLAK DOKUNULMAZLIK">🛡️ ABSOLUTE IMMUNITY</p>
+                    
+                    <div class="text-5xl font-black mb-8 text-white">$50<span class="text-sm text-gray-500 font-medium">/mo</span></div>
+                    
+                    <ul class="text-xs text-gray-300 space-y-4 mb-10 flex-1 font-medium">
+                        <li class="flex items-center"><svg class="w-4 h-4 text-[#10b981] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="1 Dedicated HWID Slot" data-tr="1 Özel HWID Yuvası">1 Dedicated HWID Slot</span></li>
+                        <li class="flex items-center"><svg class="w-4 h-4 text-[#10b981] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="Unique Polymorphic Engine" data-tr="Benzersiz Polimorfik Motor">Unique Polymorphic Engine</span></li>
+                        <li class="flex items-center"><svg class="w-4 h-4 text-[#10b981] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="Zero Shared Risk" data-tr="Sıfır Ortak Risk">Zero Shared Risk</span></li>
+                        <li class="flex items-center"><svg class="w-4 h-4 text-[#10b981] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="Direct Dev Support" data-tr="Doğrudan Geliştirici Desteği">Direct Dev Support</span></li>
                     </ul>
-                    <button class="w-full py-3 bg-[#10b981]/10 border border-[#10b981]/30 hover:bg-[#10b981] hover:text-black transition rounded-xl font-black italic uppercase text-[9px] tracking-widest translatable" data-en="Apply Solo" data-tr="Solo Başvur">Apply Solo</button>
+                    <button class="w-full py-4 bg-[#10b981] hover:bg-[#0ea5e9] text-black transition-all rounded-2xl font-black italic uppercase text-[10px] tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.2)] translatable" data-en="Apply For Private Solo" data-tr="Private Solo İçin Başvur">Apply For Private Solo</button>
                 </div>
 
-                <div class="glass p-8 rounded-[2rem] border-[#10b981]/40 bg-gradient-to-br from-black to-[#10b981]/10 relative flex flex-col hover:border-[#10b981] transition-all scale-105 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
-                    <div class="absolute top-0 right-0 bg-[#10b981] text-black px-4 py-1.5 text-[8px] font-black uppercase rounded-bl-xl translatable" data-en="MOST POPULAR" data-tr="EN POPÜLER">MOST POPULAR</div>
-                    <h4 class="text-2xl font-black italic uppercase mb-1 text-[#10b981]">Private Duo</h4>
-                    <div class="text-4xl font-black mb-6 text-white">$80<span class="text-xs text-gray-500 font-medium">/mo</span></div>
-                    <ul class="text-[11px] text-gray-300 space-y-3 mb-8 flex-1">
-                        <li class="flex items-center"><svg class="w-3 h-3 text-[#10b981] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="2 Dedicated Slots" data-tr="2 Özel Slot">2 Dedicated Slots</span></li>
+                <div class="glass p-10 rounded-[2.5rem] border-[#10b981]/30 bg-gradient-to-br from-black to-[#10b981]/5 relative flex flex-col hover:border-[#10b981]/60 transition-all duration-500 hover:transform hover:-translate-y-1">
+                    <div class="absolute top-0 right-0 bg-[#10b981] text-black px-5 py-2 text-[9px] font-black uppercase rounded-bl-2xl translatable" data-en="1 OF 1 CUSTOM BUILD" data-tr="KİŞİYE ÖZEL 1/1 SÜRÜM">1 OF 1 CUSTOM BUILD</div>
+                    <h4 class="text-3xl font-black italic uppercase mb-2 text-[#10b981] drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">Private Duo</h4>
+                    <p class="text-red-400 text-[9px] font-bold uppercase mb-6 tracking-widest translatable" data-en="🛡️ ABSOLUTE IMMUNITY" data-tr="🛡️ MUTLAK DOKUNULMAZLIK">🛡️ ABSOLUTE IMMUNITY</p>
+                    
+                    <div class="text-5xl font-black mb-8 text-white">$80<span class="text-sm text-gray-500 font-medium">/mo</span></div>
+                    
+                    <ul class="text-xs text-gray-300 space-y-4 mb-10 flex-1 font-medium">
+                        <li class="flex items-center"><svg class="w-4 h-4 text-[#10b981] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="2 Dedicated HWID Slots" data-tr="2 Özel HWID Yuvası">2 Dedicated HWID Slots</span></li>
+                        <li class="flex items-center"><svg class="w-4 h-4 text-[#10b981] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="Unique Polymorphic Engine" data-tr="Benzersiz Polimorfik Motor">Unique Polymorphic Engine</span></li>
+                        <li class="flex items-center"><svg class="w-4 h-4 text-[#10b981] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="Zero Shared Risk" data-tr="Sıfır Ortak Risk">Zero Shared Risk</span></li>
+                        <li class="flex items-center"><svg class="w-4 h-4 text-[#10b981] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="Direct Dev Support" data-tr="Doğrudan Geliştirici Desteği">Direct Dev Support</span></li>
                     </ul>
-                    <button class="w-full py-3 bg-[#10b981] text-black hover:scale-105 transition rounded-xl font-black italic uppercase text-[9px] tracking-widest translatable" data-en="Apply Duo" data-tr="Duo Başvur">Apply Duo</button>
+                    <button class="w-full py-4 bg-[#10b981] hover:bg-[#0ea5e9] text-black transition-all rounded-2xl font-black italic uppercase text-[10px] tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.2)] translatable" data-en="Apply For Private Duo" data-tr="Private Duo İçin Başvur">Apply For Private Duo</button>
                 </div>
 
-                <div class="glass p-8 rounded-[2rem] border-[#10b981]/20 bg-gradient-to-br from-black to-[#10b981]/5 relative flex flex-col hover:border-[#10b981]/50 transition-all">
-                    <div class="absolute top-0 right-0 bg-[#10b981]/20 text-[#10b981] px-4 py-1.5 text-[8px] font-black uppercase rounded-bl-xl translatable" data-en="FULL SQUAD" data-tr="TAM EKİP">FULL SQUAD</div>
-                    <h4 class="text-2xl font-black italic uppercase mb-1 text-[#10b981]">Private Quad</h4>
-                    <div class="text-4xl font-black mb-6 text-white">$140<span class="text-xs text-gray-500 font-medium">/mo</span></div>
-                    <ul class="text-[11px] text-gray-300 space-y-3 mb-8 flex-1">
-                        <li class="flex items-center"><svg class="w-3 h-3 text-[#10b981] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="4 Dedicated Slots" data-tr="4 Özel Slot">4 Dedicated Slots</span></li>
+                <div class="glass p-10 rounded-[2.5rem] border-[#10b981]/30 bg-gradient-to-br from-black to-[#10b981]/5 relative flex flex-col hover:border-[#10b981]/60 transition-all duration-500 hover:transform hover:-translate-y-1">
+                    <div class="absolute top-0 right-0 bg-[#10b981] text-black px-5 py-2 text-[9px] font-black uppercase rounded-bl-2xl translatable" data-en="1 OF 1 CUSTOM BUILD" data-tr="KİŞİYE ÖZEL 1/1 SÜRÜM">1 OF 1 CUSTOM BUILD</div>
+                    <h4 class="text-3xl font-black italic uppercase mb-2 text-[#10b981] drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">Private Quad</h4>
+                    <p class="text-red-400 text-[9px] font-bold uppercase mb-6 tracking-widest translatable" data-en="🛡️ ABSOLUTE IMMUNITY" data-tr="🛡️ MUTLAK DOKUNULMAZLIK">🛡️ ABSOLUTE IMMUNITY</p>
+                    
+                    <div class="text-5xl font-black mb-8 text-white">$140<span class="text-sm text-gray-500 font-medium">/mo</span></div>
+                    
+                    <ul class="text-xs text-gray-300 space-y-4 mb-10 flex-1 font-medium">
+                        <li class="flex items-center"><svg class="w-4 h-4 text-[#10b981] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="4 Dedicated HWID Slots" data-tr="4 Özel HWID Yuvası">4 Dedicated HWID Slots</span></li>
+                        <li class="flex items-center"><svg class="w-4 h-4 text-[#10b981] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="Unique Polymorphic Engine" data-tr="Benzersiz Polimorfik Motor">Unique Polymorphic Engine</span></li>
+                        <li class="flex items-center"><svg class="w-4 h-4 text-[#10b981] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="Zero Shared Risk" data-tr="Sıfır Ortak Risk">Zero Shared Risk</span></li>
+                        <li class="flex items-center"><svg class="w-4 h-4 text-[#10b981] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="translatable" data-en="Direct Dev Support" data-tr="Doğrudan Geliştirici Desteği">Direct Dev Support</span></li>
                     </ul>
-                    <button class="w-full py-3 bg-[#10b981]/10 border border-[#10b981]/30 hover:bg-[#10b981] hover:text-black transition rounded-xl font-black italic uppercase text-[9px] tracking-widest translatable" data-en="Apply Quad" data-tr="Quad Başvur">Apply Quad</button>
+                    <button class="w-full py-4 bg-[#10b981] hover:bg-[#0ea5e9] text-black transition-all rounded-2xl font-black italic uppercase text-[10px] tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.2)] translatable" data-en="Apply For Private Quad" data-tr="Private Quad İçin Başvur">Apply For Private Quad</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="discord" class="py-24 px-10 border-t border-white/5 bg-gradient-to-b from-black to-[#10b981]/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="cyber-card p-16 rounded-[4rem] border-[#5865F2]/20 relative overflow-hidden text-center group">
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#5865F2]/10 blur-[100px] rounded-full"></div>
+                <div class="laser" style="background: #5865F2; box-shadow: 0 0 15px #5865F2;"></div>
+                <div class="relative z-10">
+                    <img src="https://assets-global.website-files.com/6257adef93867e3d0394e366/6257adef93867e0e2494e391_6225e07661643666060ea697_main-logo-rgb-03.png" alt="Discord" class="h-12 mx-auto mb-8 grayscale group-hover:grayscale-0 transition-all duration-700">
+                    <h2 class="text-5xl font-black italic uppercase tracking-tighter mb-4 translatable" data-en="Join the Inner Circle" data-tr="İç Çevreye Katıl">Join the Inner Circle</h2>
+                    <p class="text-gray-500 text-[10px] tracking-[0.5em] font-bold uppercase mb-12 translatable" data-en="Real-time updates, community support & elite networking" data-tr="Anlık güncellemeler, topluluk desteği ve elit ağ">Real-time updates, community support & elite networking</p>
+                    <a href="https://discord.gg/EPYYyc7Qp" target="_blank" class="inline-block px-20 py-6 bg-[#5865F2] text-white rounded-2xl font-black italic text-[11px] tracking-[0.3em] hover:scale-105 hover:shadow-[0_0_40px_rgba(88,101,242,0.4)] transition-all uppercase translatable" data-en="Connect to Discord" data-tr="Discord'a Bağlan">Connect to Discord</a>
                 </div>
             </div>
         </div>
