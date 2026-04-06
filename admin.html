@@ -29,9 +29,29 @@
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
+
+        /* Terminal Animasyonu */
+        .log-entry { animation: slideIn 0.3s ease-out forwards; border-left: 2px solid #dc2626; padding-left: 8px; margin-bottom: 8px; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="p-6 md:p-12" id="main_body">
+    
+    <div class="fixed bottom-6 left-6 w-80 z-50 pointer-events-none">
+        <div class="admin-glass p-4 rounded-2xl border-red-600/20 shadow-2xl pointer-events-auto">
+            <div class="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                <span class="text-[9px] font-black uppercase tracking-[0.3em] text-red-600">Live Traffic</span>
+                <div class="flex gap-1">
+                    <div class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></div>
+                </div>
+            </div>
+            <div id="terminal_logs" class="h-40 overflow-y-auto scrollbar-hide flex flex-col-reverse font-mono text-[10px]">
+                <div class="text-gray-700 italic">>> SECURE LINE ESTABLISHED...</div>
+            </div>
+        </div>
+    </div>
+
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-12">
         <div class="text-center md:text-left">
             <h1 class="text-5xl font-black italic uppercase tracking-tighter leading-none">Command <span class="text-red-600">Center</span></h1>
@@ -115,7 +135,18 @@
     <script type="module">
         import { db, ref, set, get, child, remove, onValue } from "./firebase-config.js";
 
-        // Global Log Fonksiyonu
+        // Terminal Log Basma Fonksiyonu
+        const terminalLogs = document.getElementById('terminal_logs');
+        window.addTerminalLog = (msg, isSpecial = false) => {
+            const time = new Date().toLocaleTimeString('tr-TR', { hour12: false });
+            const div = document.createElement('div');
+            div.className = "log-entry";
+            const colorClass = isSpecial ? "text-red-500 font-black" : "text-gray-400";
+            div.innerHTML = `<span class="opacity-20">[${time}]</span> <span class="${colorClass}">${msg}</span>`;
+            terminalLogs.prepend(div);
+        };
+
+        // Mevcut Global Log Fonksiyonu (Telemetry için)
         window.addLog = (msg) => {
             const container = document.getElementById('log_container');
             if(!container) return;
@@ -126,7 +157,9 @@
             container.prepend(p);
         };
 
-        // Real-time Veri Takibi
+        // Girişleri Yakalamak İçin State Tutalım
+        let lastKeysState = {};
+
         onValue(ref(db, 'keys'), (snapshot) => {
             const tbody = document.getElementById('key_table_body');
             const totalDisplay = document.getElementById('total_licenses');
@@ -141,15 +174,19 @@
                 let active = 0;
                 keys.forEach(keyID => {
                     const k = data[keyID];
+                    
+                    // CANLI LOG MANTIĞI: Eğer durum UNUSED'dan ACTIVE'e geçtiyse terminale bas
+                    if(lastKeysState[keyID] && lastKeysState[keyID].status === 'UNUSED' && k.status === 'ACTIVE') {
+                        window.addTerminalLog(`USER AUTHORIZED: ${keyID}`, true);
+                        window.addTerminalLog(`HWID BINDED: ${k.hwid.substring(0,8)}...`);
+                    }
+
                     if(k.status === 'ACTIVE') active++;
 
                     let statusColor = k.status === 'ACTIVE' ? 'text-green-500 bg-green-500/5' : 
                                      (k.status === 'UNUSED' ? 'text-blue-500 bg-blue-500/5' : 'text-red-500 bg-red-500/5');
 
-                    // HWID varsa göster, yoksa NONE yaz
                     const hwidText = k.hwid ? k.hwid : '<span class="text-gray-700">NONE</span>';
-                    
-                    // HWID varsa Reset butonu üret, yoksa boş bırak
                     const resetHwidBtn = k.hwid ? `<button onclick="resetHWID('${keyID}')" class="text-yellow-600/60 hover:text-yellow-500 font-black uppercase text-[9px] tracking-widest transition mr-4">Reset HWID</button>` : '';
 
                     const tr = document.createElement('tr');
@@ -166,10 +203,13 @@
                     `;
                     tbody.appendChild(tr);
                 });
+                
+                lastKeysState = JSON.parse(JSON.stringify(data)); // Durumu güncelle
                 activeDisplay.innerText = active;
             } else {
                 totalDisplay.innerText = "0";
                 activeDisplay.innerText = "0";
+                lastKeysState = {};
             }
         });
 
@@ -188,9 +228,9 @@
                 });
                 document.getElementById('key_output').value = newKey;
                 window.addLog(`KEY DEPLOYED: ${newKey}`);
+                window.addTerminalLog(`NEW PROTOCOL DEPLOYED: ${rand}`);
             } catch (e) { 
-                console.error("Yazma Hatası:", e);
-                window.addLog("ERROR: FIREBASE DENIED WRITE");
+                window.addTerminalLog("CRITICAL ERROR: DATABASE REJECTED WRITE");
             }
         };
 
@@ -199,14 +239,16 @@
             if(confirm(`RESET HWID FOR ${id}?`)) {
                 await remove(ref(db, 'keys/' + id + '/hwid'));
                 window.addLog(`HWID RESET: ${id}`);
+                window.addTerminalLog(`HWID PURGED: ${id}`);
             }
         };
 
-        // Key Silme (Window'a bağlandı)
+        // Key Silme
         window.deleteKey = async (id) => {
             if(confirm(`REVOKE ACCESS FOR ${id}?`)) {
                 await remove(ref(db, 'keys/' + id));
                 window.addLog(`REVOKED: ${id}`);
+                window.addTerminalLog(`ACCESS REVOKED: ${id}`, true);
             }
         };
 
@@ -217,6 +259,7 @@
             if(!t || !b) return;
             await set(ref(db, 'announcement'), { title: t, body: b, time: Date.now() });
             window.addLog(`BROADCAST PUSHED: ${t}`);
+            window.addTerminalLog(`GLOBAL ALERT SENT: ${t}`);
             document.getElementById('ann_title').value = "";
             document.getElementById('ann_body').value = "";
         };
@@ -226,10 +269,11 @@
             if(confirm("DANGER: WIPE ENTIRE DATABASE?")) {
                 await remove(ref(db, 'keys'));
                 window.addLog("DATABASE PURGED.");
+                window.addTerminalLog("SYSTEM WIPE COMPLETE.", true);
             }
         };
 
-        window.addLog("MASTER ROOT INITIALIZED.");
+        window.addTerminalLog("MASTER ROOT INITIALIZED.");
     </script>
 </body>
 </html>

@@ -94,7 +94,6 @@
             if (e.key === 'Enter') handleLogin();
         });
 
-        // EKLENEN KISIM: 1. HWID Oluşturucu
         async function generateHWID() {
             const msgUint8 = new TextEncoder().encode(navigator.userAgent + navigator.language + screen.width + screen.height);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
@@ -110,21 +109,17 @@
                 return;
             }
 
-            // 1. MASTER ADMİN GİRİŞİ (Büyük-Küçük Duyarsız)
             if(key.toUpperCase() === "ADMIN") {
                 window.location.href = "admin.html";
                 return;
             }
 
-            // Animasyon Başlat
             btnText.innerText = "VERIFYING...";
             btn.style.opacity = "0.7";
             btn.style.pointerEvents = "none"; 
 
             try {
-                // EKLENEN KISIM: Kullanıcının HWID kodunu alıyoruz
                 const userHWID = await generateHWID();
-                
                 const dbRef = ref(db);
                 const snapshot = await get(child(dbRef, `keys/${key}`));
 
@@ -138,9 +133,10 @@
                             foundKey.status = 'ACTIVE';
                             let daysInMs = parseInt(foundKey.days) * 24 * 60 * 60 * 1000;
                             foundKey.expireDate = currentTime + daysInMs;
-                            
-                            // EKLENEN KISIM: Key ilk kez kullanıldığı için HWID mühürlendi
                             foundKey.hwid = userHWID;
+                            
+                            // ADMIN LOG İÇİN: Aktivasyon zamanını ekliyoruz
+                            foundKey.activatedAt = currentTime; 
                             
                             await set(ref(db, 'keys/' + key), foundKey);
                             
@@ -155,17 +151,19 @@
                                 await set(ref(db, 'keys/' + key), foundKey);
                                 showError("LİSANS SÜRESİ DOLMUŞTUR!");
                             } else {
-                                // EKLENEN KISIM: HWID Kontrolü
                                 if (foundKey.hwid && foundKey.hwid !== userHWID) {
                                     showError("BU LİSANS BAŞKA BİR CİHAZA KAYITLIDIR!");
                                 } else {
+                                    // Zaten aktif olan bir cihaz tekrar giriyorsa logu tazeliyoruz
+                                    foundKey.activatedAt = currentTime;
+                                    await set(ref(db, 'keys/' + key), foundKey);
+
                                     localStorage.setItem('panther_active_key', key);
                                     localStorage.setItem('current_user', JSON.stringify(foundKey));
                                     window.location.href = "dashboard.html";
                                 }
                             }
                         } 
-                        // DURUM 3: EXPIRED/OTHER
                         else {
                             showError("LİSANS GEÇERSİZ VEYA SÜRESİ BİTMİŞ!");
                         }
