@@ -133,7 +133,8 @@
     </div>
 
     <script type="module">
-        import { db, ref, set, get, child, remove, onValue } from "./firebase-config.js";
+        // onDisconnect listeye eklendi
+        import { db, ref, set, get, child, remove, onValue, onDisconnect } from "./firebase-config.js";
 
         // Terminal Log Basma Fonksiyonu
         const terminalLogs = document.getElementById('terminal_logs');
@@ -146,7 +147,7 @@
             terminalLogs.prepend(div);
         };
 
-        // Mevcut Global Log Fonksiyonu (Telemetry için)
+        // Telemetry Log
         window.addLog = (msg) => {
             const container = document.getElementById('log_container');
             if(!container) return;
@@ -157,7 +158,6 @@
             container.prepend(p);
         };
 
-        // Girişleri Yakalamak İçin State Tutalım
         let lastKeysState = {};
 
         onValue(ref(db, 'keys'), (snapshot) => {
@@ -175,14 +175,11 @@
                 keys.forEach(keyID => {
                     const k = data[keyID];
                     
-                    // 🔥 HER GİRİŞTE LOG BASMA MANTIĞI
+                    // LOGIN VE HWID LOG TAKİBİ
                     if (lastKeysState[keyID]) {
-                        // Eğer adamın giriş saati (activatedAt) bir önceki duruma göre değiştiyse demek ki YENİDEN giriş yaptı!
                         if (k.activatedAt && k.activatedAt !== lastKeysState[keyID].activatedAt) {
                             window.addTerminalLog(`LOGIN DETECTED: ${keyID}`, true);
                         }
-                        
-                        // HWID Sıfırlandıysa
                         if (lastKeysState[keyID].hwid && !k.hwid) {
                             window.addTerminalLog(`HWID PURGED: ${keyID}`);
                         }
@@ -196,7 +193,8 @@
                     const hwidText = k.hwid ? k.hwid : '<span class="text-gray-700">NONE</span>';
                     const resetHwidBtn = k.hwid ? `<button onclick="resetHWID('${keyID}')" class="text-yellow-600/60 hover:text-yellow-500 font-black uppercase text-[9px] tracking-widest transition mr-4">Reset HWID</button>` : '';
 
-                    // 🔥 ONLINE STATUS BİLDİRGESİ (Yeşil yanıp sönen nokta veya gri nokta)
+                    // ONLINE DURUM GÖSTERGESİ
+                    // Eğer isOnline true ise yeşil animasyonlu nokta, değilse gri nokta
                     const onlineIndicator = k.isOnline 
                         ? `<span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>` 
                         : `<span class="flex h-2 w-2 mr-2 rounded-full bg-gray-800 border border-gray-600"></span>`;
@@ -204,7 +202,7 @@
                     const tr = document.createElement('tr');
                     tr.className = "border-b border-white/[0.02] hover:bg-white/[0.01] transition group";
                     tr.innerHTML = `
-                        <td class="py-6 font-black text-white group-hover:text-red-600 transition flex items-center mt-2">
+                        <td class="py-6 font-black text-white group-hover:text-red-600 transition flex items-center">
                             ${onlineIndicator} ${keyID}
                         </td>
                         <td class="py-6 text-gray-500 italic">${k.days}D</td>
@@ -218,7 +216,7 @@
                     tbody.appendChild(tr);
                 });
                 
-                lastKeysState = JSON.parse(JSON.stringify(data)); // Durumu güncelle
+                lastKeysState = JSON.parse(JSON.stringify(data));
                 activeDisplay.innerText = active;
             } else {
                 totalDisplay.innerText = "0";
@@ -238,7 +236,8 @@
                 await set(ref(db, 'keys/' + newKey), {
                     days: parseInt(days),
                     status: 'UNUSED',
-                    expireDate: 0
+                    expireDate: 0,
+                    isOnline: false // Yeni anahtar offline başlar
                 });
                 document.getElementById('key_output').value = newKey;
                 window.addLog(`KEY DEPLOYED: ${newKey}`);
@@ -251,9 +250,15 @@
         // HWID Sıfırlama
         window.resetHWID = async (id) => {
             if(confirm(`RESET HWID FOR ${id}?`)) {
-                await remove(ref(db, 'keys/' + id + '/hwid'));
-                window.addLog(`HWID RESET: ${id}`);
-                window.addTerminalLog(`HWID PURGED: ${id}`);
+                const dbRef = ref(db, 'keys/' + id);
+                const snapshot = await get(dbRef);
+                if(snapshot.exists()){
+                    let val = snapshot.val();
+                    delete val.hwid;
+                    await set(dbRef, val);
+                    window.addLog(`HWID RESET: ${id}`);
+                    window.addTerminalLog(`HWID PURGED: ${id}`);
+                }
             }
         };
 

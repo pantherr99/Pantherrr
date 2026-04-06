@@ -6,13 +6,13 @@ import {
     get, 
     child, 
     remove, 
-    onValue 
+    onValue,
+    onDisconnect // <--- Bağlantı kopmasını takip etmek için eklendi
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCjMAo3sazNWx5aNFS9RnOahAqNOxyMmjA",
     authDomain: "panter-f9c0e.firebaseapp.com",
-    // EKSİK OLAN VE HATAYA SEBEP OLAN SATIR BUYDU:
     databaseURL: "https://panter-f9c0e-default-rtdb.europe-west1.firebasedatabase.app", 
     projectId: "panter-f9c0e",
     storageBucket: "panter-f9c0e.firebasestorage.app",
@@ -25,5 +25,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// admin.html'in bu fonksiyonlara erişebilmesi için dışa aktarıyoruz
-export { db, ref, set, get, child, remove, onValue };
+// Proje genelinde kullanılacak tüm modülleri dışa aktarıyoruz
+export { 
+    db, 
+    ref, 
+    set, 
+    get, 
+    child, 
+    remove, 
+    onValue, 
+    onDisconnect 
+};
