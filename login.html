@@ -81,7 +81,8 @@
     </div>
 
     <script type="module">
-        import { db, ref, set, get, child } from "./firebase-config.js";
+        // onDisconnect eklendi
+        import { db, ref, set, get, child, onDisconnect } from "./firebase-config.js";
 
         const btn = document.getElementById('login_btn');
         const btnText = document.getElementById('btn_text');
@@ -128,35 +129,42 @@
                         let foundKey = snapshot.val();
                         let currentTime = new Date().getTime();
 
-                        // DURUM 1: UNUSED
+                        // DURUM 1: UNUSED (İlk kez giriş)
                         if (foundKey.status === 'UNUSED') {
                             foundKey.status = 'ACTIVE';
                             let daysInMs = parseInt(foundKey.days) * 24 * 60 * 60 * 1000;
                             foundKey.expireDate = currentTime + daysInMs;
                             foundKey.hwid = userHWID;
-                            
-                            // ADMIN LOG İÇİN: Aktivasyon zamanını ekliyoruz
                             foundKey.activatedAt = currentTime; 
+                            foundKey.isOnline = true; // Online yap
                             
                             await set(ref(db, 'keys/' + key), foundKey);
+
+                            // Sekme kapanınca otomatik offline yap
+                            onDisconnect(ref(db, 'keys/' + key + '/isOnline')).set(false);
                             
                             localStorage.setItem('panther_active_key', key);
                             localStorage.setItem('current_user', JSON.stringify(foundKey));
                             window.location.href = "dashboard.html";
                         } 
-                        // DURUM 2: ACTIVE
+                        // DURUM 2: ACTIVE (Tekrar giriş)
                         else if (foundKey.status === 'ACTIVE') {
                             if (currentTime > foundKey.expireDate) {
                                 foundKey.status = 'EXPIRED';
+                                foundKey.isOnline = false;
                                 await set(ref(db, 'keys/' + key), foundKey);
                                 showError("LİSANS SÜRESİ DOLMUŞTUR!");
                             } else {
                                 if (foundKey.hwid && foundKey.hwid !== userHWID) {
                                     showError("BU LİSANS BAŞKA BİR CİHAZA KAYITLIDIR!");
                                 } else {
-                                    // Zaten aktif olan bir cihaz tekrar giriyorsa logu tazeliyoruz
                                     foundKey.activatedAt = currentTime;
+                                    foundKey.isOnline = true; // Online yap
+                                    
                                     await set(ref(db, 'keys/' + key), foundKey);
+
+                                    // Sekme kapanınca otomatik offline yap
+                                    onDisconnect(ref(db, 'keys/' + key + '/isOnline')).set(false);
 
                                     localStorage.setItem('panther_active_key', key);
                                     localStorage.setItem('current_user', JSON.stringify(foundKey));
