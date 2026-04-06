@@ -9,7 +9,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         
         body {
-            background-color: #050505; /* Gerçek kullanımda transparent olacak */
+            background-color: #050505; /* Gerçek kullanımda transparent (0,0,0,0) olacak */
             color: white;
             font-family: 'Plus Jakarta Sans', sans-serif;
             margin: 0;
@@ -18,84 +18,95 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
+            user-select: none;
         }
 
+        /* Ana Pencere - Glassmorphism & Depth */
         .imgui-window {
-            width: 950px; /* Ped sığması için genişliği artırdım */
-            height: 600px;
-            background: rgba(8, 8, 8, 0.98);
-            border: 1px solid rgba(185, 147, 255, 0.15); /* image_03916f'deki mor tonu */
-            border-radius: 16px;
+            width: 980px;
+            height: 620px;
+            background: rgba(10, 10, 10, 0.98);
+            border: 1px solid rgba(185, 147, 255, 0.12);
+            border-radius: 20px;
             display: flex;
             flex-direction: row;
             position: relative;
-            box-shadow: 0 0 60px rgba(0,0,0,0.9);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(185, 147, 255, 0.03);
         }
 
         /* Sidebar */
         .sidebar {
-            width: 80px;
-            background: #080808;
-            border-right: 1px solid rgba(255, 255, 255, 0.02);
+            width: 85px;
+            background: rgba(8, 8, 8, 0.5);
+            border-right: 1px solid rgba(255, 255, 255, 0.03);
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 25px 0;
+            padding: 30px 0;
+            border-radius: 20px 0 0 20px;
         }
 
         .nav-item {
-            width: 45px;
-            height: 45px;
-            margin-bottom: 20px;
+            width: 48px;
+            height: 48px;
+            margin-bottom: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: 0.3s;
-            color: #444;
-            background: rgba(255,255,255,0.02);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #333;
+            background: rgba(255,255,255,0.01);
         }
+
+        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
 
         .nav-item.active {
             color: #b993ff;
-            background: rgba(185, 147, 255, 0.1);
-            box-shadow: 0 0 15px rgba(185, 147, 255, 0.05);
+            background: rgba(185, 147, 255, 0.08);
+            box-shadow: 0 0 20px rgba(185, 147, 255, 0.1);
+            transform: scale(1.05);
         }
 
-        /* Ana İçerik Alanı (3 Sütunlu Yapı) */
+        /* Main Content Grid */
         .main-container {
             flex: 1;
             display: grid;
-            grid-template-columns: 260px 1fr 260px; /* Sol - Ped - Sağ */
-            padding: 25px;
-            gap: 20px;
+            grid-template-columns: 270px 1fr 270px;
+            padding: 30px;
+            gap: 25px;
+            animation: fadeIn 0.6s ease-out;
         }
 
-        /* Panel Stilleri */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Panels */
         .settings-panel {
-            background: rgba(12, 12, 12, 0.5);
+            background: rgba(15, 15, 15, 0.4);
             border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 16px;
+            padding: 22px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 18px;
+            backdrop-filter: blur(10px);
         }
 
         .panel-title {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 800;
             text-transform: uppercase;
             color: #b993ff;
-            letter-spacing: 1.5px;
-            margin-bottom: 10px;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            opacity: 0.8;
         }
 
-        /* Karakter Alanı (Orta) */
+        /* Ped Preview Section */
         .ped-preview-area {
             position: relative;
             display: flex;
@@ -106,172 +117,226 @@
 
         .ped-container {
             width: 100%;
-            height: 400px;
-            background: radial-gradient(circle, rgba(185, 147, 255, 0.05) 0%, transparent 70%);
+            height: 420px;
+            background: radial-gradient(circle, rgba(185, 147, 255, 0.06) 0%, transparent 75%);
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: 0.5s ease;
         }
 
         .ped-placeholder {
-            width: 200px;
-            height: 350px;
-            opacity: 0.8;
-            filter: drop-shadow(0 0 20px rgba(185, 147, 255, 0.2));
+            width: 210px;
+            height: 360px;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 25px rgba(185, 147, 255, 0.15));
+            transition: 0.3s;
         }
 
-        /* ESP Köşebentleri (image_0f4489'daki gibi) */
+        /* Neon ESP Corners */
         .esp-corner {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 2px solid #00bfff; /* Neon Mavi */
+            width: 45px;
+            height: 45px;
+            border: 2px solid #00bfff;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .top-left { top: 10%; left: 15%; border-right: 0; border-bottom: 0; border-radius: 4px 0 0 0; }
-        .top-right { top: 10%; right: 15%; border-left: 0; border-bottom: 0; border-radius: 0 4px 0 0; }
-        .bottom-left { bottom: 10%; left: 15%; border-right: 0; border-top: 0; border-radius: 0 0 0 4px; }
-        .bottom-right { bottom: 10%; right: 15%; border-left: 0; border-top: 0; border-radius: 0 0 4px 0; }
+        .top-left { top: 12%; left: 18%; border-right: 0; border-bottom: 0; border-radius: 6px 0 0 0; }
+        .top-right { top: 12%; right: 18%; border-left: 0; border-bottom: 0; border-radius: 0 6px 0 0; }
+        .bottom-left { bottom: 12%; left: 18%; border-right: 0; border-top: 0; border-radius: 0 0 0 6px; }
+        .bottom-right { bottom: 12%; right: 18%; border-left: 0; border-top: 0; border-radius: 0 0 6px 0; }
 
-        /* Custom UI Elementleri */
-        .gui-switch { position: relative; width: 32px; height: 16px; }
+        /* Custom UI Elements */
+        .gui-switch { position: relative; width: 34px; height: 18px; }
         .gui-switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
             background-color: #1a1a1a; transition: .3s; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .slider:before {
             position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px;
-            background-color: #333; transition: .3s; border-radius: 50%;
+            background-color: #444; transition: .3s; border-radius: 50%;
         }
-        input:checked + .slider { background-color: rgba(185, 147, 255, 0.2); }
-        input:checked + .slider:before { transform: translateX(16px); background-color: #b993ff; }
+        input:checked + .slider { background-color: rgba(185, 147, 255, 0.15); border-color: rgba(185, 147, 255, 0.3); }
+        input:checked + .slider:before { transform: translateX(16px); background-color: #b993ff; box-shadow: 0 0 8px #b993ff; }
 
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-        input[type=range]::-webkit-slider-runnable-track { height: 2px; background: #222; }
+        input[type=range]::-webkit-slider-runnable-track { height: 2px; background: rgba(255,255,255,0.05); border-radius: 2px; }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 10px; width: 10px; border-radius: 50%;
-            background: #b993ff; cursor: pointer; margin-top: -4px;
-            box-shadow: 0 0 10px rgba(185, 147, 255, 0.5);
+            -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%;
+            background: #b993ff; cursor: pointer; margin-top: -5px;
+            box-shadow: 0 0 10px rgba(185, 147, 255, 0.5); border: 2px solid #0a0a0a;
         }
 
         .status-badge {
-            position: absolute;
-            bottom: 15px;
-            font-size: 9px;
-            font-weight: 900;
-            background: rgba(0, 191, 255, 0.1);
-            color: #00bfff;
-            padding: 2px 10px;
-            border-radius: 4px;
-            text-transform: uppercase;
+            position: absolute; bottom: 20px; font-size: 10px; font-weight: 900;
+            background: rgba(0, 191, 255, 0.1); color: #00bfff;
+            padding: 4px 14px; border-radius: 6px; text-transform: uppercase;
+            letter-spacing: 1px; animation: glowPulse 2s infinite;
         }
+
+        @keyframes glowPulse { 0% { opacity: 1; } 50% { opacity: 0.6; transform: scale(0.98); } 100% { opacity: 1; } }
+
+        .color-dot {
+            width: 24px; height: 24px; border-radius: 6px; cursor: pointer;
+            transition: 0.2s; border: 2px solid transparent;
+        }
+        .color-dot:hover { transform: translateY(-3px); border-color: white; }
+        .color-dot.active { border-color: white; box-shadow: 0 0 15px currentColor; }
     </style>
 </head>
 <body>
 
     <div class="imgui-window">
         <div class="sidebar">
-            <div class="mb-10"><img src="https://api.dicebear.com/7.x/shapes/svg?seed=Panther&backgroundColor=b993ff" class="w-8 h-8 rounded-lg"></div>
-            <div class="nav-item active">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+            <div class="mb-12">
+                <img src="https://api.dicebear.com/7.x/shapes/svg?seed=Panther&backgroundColor=b993ff" class="w-10 h-10 rounded-xl shadow-lg border border-white/10">
             </div>
-            <div class="nav-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            
+            <div class="nav-item active" title="Combat">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
             </div>
-            <div class="nav-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            
+            <div class="nav-item" title="Visuals">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </div>
-            <div class="mt-auto nav-item text-red-500/50">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            
+            <div class="nav-item" title="Misc">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            </div>
+
+            <div class="mt-auto nav-item text-red-500/40 hover:text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             </div>
         </div>
 
         <div class="main-container">
-            
             <div class="settings-panel">
-                <div class="panel-title">Combat Settings</div>
+                <div class="panel-title">
+                    <div class="w-1 h-3 bg-[#b993ff] rounded-full"></div> Combat Settings
+                </div>
                 
-                <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5">
-                    <span class="text-[10px] font-bold uppercase tracking-tight">Master Aimbot</span>
+                <div class="flex justify-between items-center bg-white/[0.03] p-4 rounded-xl border border-white/[0.02]">
+                    <span class="text-[10px] font-bold uppercase tracking-wide">Master Aimbot</span>
                     <label class="gui-switch"><input type="checkbox" checked><span class="slider"></span></label>
                 </div>
 
-                <div class="space-y-1 mt-2">
-                    <div class="flex justify-between"><span class="text-[9px] uppercase text-gray-500">Smoothness</span><span class="text-[#b993ff] text-[9px]">4.5</span></div>
-                    <input type="range" min="0" max="20" value="4">
+                <div class="space-y-2 mt-2">
+                    <div class="flex justify-between items-end"><span class="text-[9px] uppercase text-gray-500 font-bold">Smoothing</span><span class="text-[#b993ff] text-[10px] font-black italic">4.5</span></div>
+                    <input type="range" min="0" max="20" step="0.1" value="4.5">
                 </div>
 
-                <div class="space-y-1">
-                    <div class="flex justify-between"><span class="text-[9px] uppercase text-gray-500">Field of View</span><span class="text-[#b993ff] text-[9px]">120.0</span></div>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-end"><span class="text-[9px] uppercase text-gray-500 font-bold">Field of View</span><span class="text-[#b993ff] text-[10px] font-black italic">120.0</span></div>
                     <input type="range" min="0" max="360" value="120">
                 </div>
 
                 <div class="flex justify-between items-center py-1">
-                    <span class="text-[10px] text-gray-300 font-semibold uppercase">Silent Aim</span>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase">Silent Aim</span>
                     <label class="gui-switch"><input type="checkbox"><span class="slider"></span></label>
                 </div>
                 
-                <div class="flex justify-between items-center py-1 border-t border-white/5 pt-3">
-                    <span class="text-[10px] text-gray-300 font-semibold uppercase">Show FOV Circle</span>
+                <div class="flex justify-between items-center py-1 border-t border-white/5 pt-4">
+                    <span class="text-[10px] text-gray-400 font-bold uppercase">Draw FOV</span>
                     <label class="gui-switch"><input type="checkbox" checked><span class="slider"></span></label>
                 </div>
             </div>
 
             <div class="ped-preview-area">
-                <div class="text-[10px] absolute top-5 font-black italic tracking-[4px] opacity-30">PREVIEW_MODE</div>
+                <div class="text-[9px] absolute top-8 font-black italic tracking-[6px] text-white/20">VIRTUAL_BUFFER_01</div>
                 
-                <div class="ped-container">
+                <div class="ped-container" id="previewContainer">
                     <div class="esp-corner top-left"></div>
                     <div class="esp-corner top-right"></div>
                     <div class="esp-corner bottom-left"></div>
                     <div class="esp-corner bottom-right"></div>
 
-                    <img src="https://r2.fivem.net/dwm-v2/ped_example.png" alt="Ped" class="ped-placeholder" onerror="this.src='https://i.imgur.com/3Ym9FhM.png'">
+                    <img src="https://i.imgur.com/3Ym9FhM.png" alt="Ped" class="ped-placeholder">
                 </div>
 
-                <div class="status-badge">you mad?</div>
-                <div class="text-[8px] absolute bottom-2 opacity-20">HWID: 592X-PP91-PANTHER-001</div>
+                <div class="status-badge" id="statusMsg">you mad?</div>
+                <div class="text-[8px] absolute bottom-4 font-mono opacity-20 tracking-tighter">HWID: 592X-PP91-PANTHER-001</div>
             </div>
 
             <div class="settings-panel">
-                <div class="panel-title">Visual Intelligence</div>
+                <div class="panel-title">
+                    <div class="w-1 h-3 bg-[#b993ff] rounded-full"></div> Intelligence
+                </div>
                 
-                <div class="grid grid-cols-1 gap-2">
-                    <div class="flex justify-between items-center p-2 rounded bg-white/5">
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center p-3 rounded-xl bg-white/[0.02] border border-white/[0.02] hover:bg-white/[0.04] transition">
                         <span class="text-[10px] font-bold uppercase">Box ESP</span>
-                        <label class="gui-switch"><input type="checkbox" checked><span class="slider"></span></label>
+                        <label class="gui-switch"><input type="checkbox" id="boxToggle" checked><span class="slider"></span></label>
                     </div>
-                    <div class="flex justify-between items-center p-2 rounded bg-white/5">
+                    <div class="flex justify-between items-center p-3 rounded-xl bg-white/[0.02] border border-white/[0.02]">
                         <span class="text-[10px] font-bold uppercase">Skeleton</span>
                         <label class="gui-switch"><input type="checkbox" checked><span class="slider"></span></label>
                     </div>
-                    <div class="flex justify-between items-center p-2 rounded bg-white/5">
+                    <div class="flex justify-between items-center p-3 rounded-xl bg-white/[0.02] border border-white/[0.02]">
                         <span class="text-[10px] font-bold uppercase">Snaplines</span>
                         <label class="gui-switch"><input type="checkbox"><span class="slider"></span></label>
                     </div>
-                    <div class="flex justify-between items-center p-2 rounded bg-white/5">
-                        <span class="text-[10px] font-bold uppercase">Health Bar</span>
-                        <label class="gui-switch"><input type="checkbox" checked><span class="slider"></span></label>
-                    </div>
-                    <div class="flex justify-between items-center p-2 rounded bg-white/5">
-                        <span class="text-[10px] font-bold uppercase">Name ESP</span>
-                        <label class="gui-switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+
+                <div class="mt-4 p-4 border border-[#b993ff]/10 rounded-2xl bg-[#b993ff]/[0.02]">
+                    <div class="text-[9px] font-black uppercase mb-3 text-[#b993ff] tracking-widest text-center">Protocol Color</div>
+                    <div class="flex justify-center gap-3">
+                        <div class="color-dot active" style="background: #00bfff; color: #00bfff;"></div>
+                        <div class="color-dot" style="background: #b993ff; color: #b993ff;"></div>
+                        <div class="color-dot" style="background: #ff4b4b; color: #ff4b4b;"></div>
+                        <div class="color-dot" style="background: #4bff4b; color: #4bff4b;"></div>
                     </div>
                 </div>
 
-                <div class="mt-4 p-3 border border-[#b993ff]/20 rounded-lg bg-[#b993ff]/5">
-                    <div class="text-[9px] font-black uppercase mb-2 text-[#b993ff]">ESP Color</div>
-                    <div class="flex gap-2">
-                        <div class="w-6 h-6 rounded bg-[#00bfff] cursor-pointer ring-2 ring-white/20"></div>
-                        <div class="w-6 h-6 rounded bg-[#b993ff] cursor-pointer"></div>
-                        <div class="w-6 h-6 rounded bg-[#ff4b4b] cursor-pointer"></div>
-                        <div class="w-6 h-6 rounded bg-[#4bff4b] cursor-pointer"></div>
-                    </div>
+                <div class="mt-auto pt-4 border-t border-white/5">
+                    <button class="w-full py-3 rounded-xl bg-white/5 text-[9px] font-black uppercase tracking-widest hover:bg-[#b993ff] hover:text-black transition-all duration-500">Save Config</button>
                 </div>
             </div>
-
         </div>
     </div>
 
+    <script>
+        // --- Canlı Önizleme Mantığı ---
+        
+        const boxToggle = document.getElementById('boxToggle');
+        const corners = document.querySelectorAll('.esp-corner');
+        const statusMsg = document.getElementById('statusMsg');
+        const colorDots = document.querySelectorAll('.color-dot');
+
+        // Box ESP Toggle
+        boxToggle.addEventListener('change', (e) => {
+            corners.forEach(c => {
+                c.style.opacity = e.target.checked ? "1" : "0";
+                c.style.transform = e.target.checked ? "scale(1)" : "scale(1.2)";
+            });
+            statusMsg.innerText = e.target.checked ? "ESP ACTIVE" : "STEALTH MODE";
+            statusMsg.style.color = e.target.checked ? "" : "#555";
+        });
+
+        // Renk Seçici
+        colorDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                // Aktif sınıfını güncelle
+                colorDots.forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+
+                // Köşeleri ve Badge'i boya
+                const color = dot.style.backgroundColor;
+                corners.forEach(c => c.style.borderColor = color);
+                statusMsg.style.color = color;
+                statusMsg.style.background = color.replace('rgb', 'rgba').replace(')', ', 0.1)');
+                statusMsg.style.boxShadow = `0 0 15px ${color.replace('rgb', 'rgba').replace(')', ', 0.2)')}`;
+            });
+        });
+
+        // Range Input Değer Gösterimi
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            input.addEventListener('input', (e) => {
+                const valDisplay = e.target.previousElementSibling.querySelector('span:last-child');
+                if(valDisplay) valDisplay.innerText = parseFloat(e.target.value).toFixed(1);
+            });
+        });
+    </script>
 </body>
 </html>
