@@ -8,36 +8,31 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         body { background: #050505; color: white; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
-        
         .admin-glass {
             background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.03); transition: 0.3s;
         }
         .admin-glass:hover { border-color: rgba(220, 38, 38, 0.3); }
-
         .btn-red {
             background: #dc2626; color: white; font-weight: 900; font-style: italic;
             text-transform: uppercase; transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
-            cursor: pointer;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.2); cursor: pointer;
         }
         .btn-red:hover { background: #ff0000; transform: translateY(-2px); box-shadow: 0 0 30px rgba(220, 38, 38, 0.4); }
-
         input, textarea {
             background: #0f0f0f !important; border: 1px solid #1f1f1f !important;
             color: #ef4444 !important; outline: none; transition: 0.2s;
         }
         input:focus { border-color: #dc2626 !important; box-shadow: 0 0 10px rgba(220, 38, 38, 0.1); }
-        
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #dc2626; box-shadow: 0 0 10px #dc2626; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
     </style>
 </head>
 <body class="p-6 md:p-12" id="main_body">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-12">
         <div class="text-center md:text-left">
             <h1 class="text-5xl font-black italic uppercase tracking-tighter leading-none">Command <span class="text-red-600">Center</span></h1>
             <p class="text-[10px] text-gray-600 font-bold tracking-[0.5em] mt-4 uppercase opacity-50">Panther Security Systems v4.0 // Root Access</p>
@@ -52,7 +47,6 @@
     </div>
 
     <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        
         <div class="admin-glass p-8 rounded-[2.5rem] flex flex-col shadow-2xl">
             <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-8 italic">Key Generator</h3>
             <div class="space-y-5 flex-grow">
@@ -62,8 +56,7 @@
                 </div>
                 <div>
                     <label class="text-[8px] font-black text-gray-600 uppercase tracking-widest ml-2 mb-2 block">Generated Result</label>
-                    <input type="text" id="key_output" readonly placeholder="Ready to Generate" 
-                           class="w-full p-5 rounded-2xl text-xs font-mono tracking-widest opacity-60 bg-black/40 cursor-pointer">
+                    <input type="text" id="key_output" readonly placeholder="Ready to Generate" class="w-full p-5 rounded-2xl text-xs font-mono tracking-widest opacity-60 bg-black/40 cursor-pointer">
                 </div>
             </div>
             <button id="gen_btn" class="btn-red w-full py-5 mt-8 rounded-2xl tracking-widest text-xs">Initialize New Key</button>
@@ -121,7 +114,7 @@
     <script type="module">
         import { db, ref, set, get, child, remove, onValue } from "./firebase-config.js";
 
-        // Global Fonksiyonlar (HTML onclick'ler için window'a bağladık)
+        // Global Log Fonksiyonu
         window.addLog = (msg) => {
             const container = document.getElementById('log_container');
             if(!container) return;
@@ -132,7 +125,7 @@
             container.prepend(p);
         };
 
-        // Otomatik Dinleme (Real-time Sync)
+        // Real-time Veri Takibi
         onValue(ref(db, 'keys'), (snapshot) => {
             const tbody = document.getElementById('key_table_body');
             const totalDisplay = document.getElementById('total_licenses');
@@ -159,7 +152,7 @@
                         <td class="py-6 text-gray-500 italic">${k.days}D</td>
                         <td class="py-6"><span class="px-3 py-1 rounded-lg font-black text-[9px] ${statusColor}">${k.status}</span></td>
                         <td class="py-6 text-right">
-                            <button onclick="window.deleteKey('${keyID}')" class="text-gray-700 hover:text-red-600 font-black uppercase text-[9px] tracking-widest transition">Revoke Access</button>
+                            <button onclick="deleteKey('${keyID}')" class="text-gray-700 hover:text-red-600 font-black uppercase text-[9px] tracking-widest transition">Revoke Access</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -171,7 +164,7 @@
             }
         });
 
-        // Key Oluşturma
+        // Key Oluşturma (await eklenerek güçlendirildi)
         document.getElementById('gen_btn').onclick = async () => {
             const daysInput = document.getElementById('key_days');
             const days = daysInput ? daysInput.value : 30;
@@ -184,33 +177,15 @@
                     status: 'UNUSED',
                     expireDate: 0
                 });
-                const output = document.getElementById('key_output');
-                if(output) output.value = newKey;
+                document.getElementById('key_output').value = newKey;
                 window.addLog(`KEY DEPLOYED: ${newKey}`);
-            } catch (e) { console.error(e); alert("Firebase Write Error!"); }
+            } catch (e) { 
+                console.error("Yazma Hatası:", e);
+                window.addLog("ERROR: FIREBASE DENIED WRITE");
+            }
         };
 
-        // Key Kopyalama
-        document.getElementById('key_output').onclick = function() {
-            if(!this.value) return;
-            navigator.clipboard.writeText(this.value);
-            window.addLog("KEY COPIED TO CLIPBOARD");
-        };
-
-        // Duyuru Gönderme
-        document.getElementById('broadcast_btn').onclick = async () => {
-            const titleInput = document.getElementById('ann_title');
-            const bodyInput = document.getElementById('ann_body');
-            const t = titleInput ? titleInput.value : "";
-            const b = bodyInput ? bodyInput.value : "";
-            if(!t || !b) return;
-            await set(ref(db, 'announcement'), { title: t, body: b, time: Date.now() });
-            window.addLog(`BROADCAST PUSHED: ${t}`);
-            if(titleInput) titleInput.value = "";
-            if(bodyInput) bodyInput.value = "";
-        };
-
-        // Tekli Silme
+        // Key Silme (Window'a bağlandı)
         window.deleteKey = async (id) => {
             if(confirm(`REVOKE ACCESS FOR ${id}?`)) {
                 await remove(ref(db, 'keys/' + id));
@@ -218,7 +193,18 @@
             }
         };
 
-        // Full WIPE
+        // Duyuru Pushlama
+        document.getElementById('broadcast_btn').onclick = async () => {
+            const t = document.getElementById('ann_title').value;
+            const b = document.getElementById('ann_body').value;
+            if(!t || !b) return;
+            await set(ref(db, 'announcement'), { title: t, body: b, time: Date.now() });
+            window.addLog(`BROADCAST PUSHED: ${t}`);
+            document.getElementById('ann_title').value = "";
+            document.getElementById('ann_body').value = "";
+        };
+
+        // Veritabanı Temizleme
         document.getElementById('purge_btn').onclick = async () => {
             if(confirm("DANGER: WIPE ENTIRE DATABASE?")) {
                 await remove(ref(db, 'keys'));
